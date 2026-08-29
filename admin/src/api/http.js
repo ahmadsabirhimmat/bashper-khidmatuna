@@ -1,10 +1,10 @@
 import { clearSession, getStoredToken } from '../utils/session';
 
 const isDev = import.meta.env.DEV;
-const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-const baseFromEnv = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const PRODUCTION_API = 'https://bashper-khidmatuna.onrender.com';
 const fallbackDevBase = 'http://localhost:4000';
-const resolvedBase = baseFromEnv || (isDev ? fallbackDevBase : runtimeOrigin);
+const baseFromEnv = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const resolvedBase = baseFromEnv || (isDev ? fallbackDevBase : PRODUCTION_API);
 const API_BASE_URL = resolvedBase;
 const AUTH_EVENT = 'bk-auth-expired';
 

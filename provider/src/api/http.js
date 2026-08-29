@@ -1,9 +1,9 @@
 import { getAuthToken } from '../utils/authStorage';
 
 const isDev = import.meta.env.DEV;
-const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+const PRODUCTION_API = 'https://bashper-khidmatuna.onrender.com';
 const fromEnv = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-const API_BASE_URL = fromEnv || (isDev ? 'http://localhost:4000' : runtimeOrigin);
+const API_BASE_URL = fromEnv || (isDev ? 'http://localhost:4000' : PRODUCTION_API);
 
 const buildUrl = (path) => {
   if (!path.startsWith('/')) {

@@ -36,3 +36,41 @@ services:
         sync: false
       - key: OTP_DEV_MODE
         value: "false"
+
+  - type: web
+    name: bashper-khidmatuna-admin
+    runtime: static
+    plan: free
+    region: singapore
+    rootDir: admin
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_API_URL
+        value: https://bashper-khidmatuna.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: web
+    name: bashper-khidmatuna-provider
+    runtime: static
+    plan: free
+    region: singapore
+    rootDir: provider
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_API_URL
+        value: https://bashper-khidmatuna.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
