@@ -13,6 +13,20 @@ const getMailConfig = () => {
 const isOtpDevMode = () =>
   String(process.env.OTP_DEV_MODE || '').toLowerCase() === 'true';
 
+const assertMailReady = () => {
+  if (isOtpDevMode()) {
+    return;
+  }
+  const { user, pass } = getMailConfig();
+  if (!user || !pass) {
+    const error = new Error(
+      'Gmail is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD on the API service in Render, then restart it.'
+    );
+    error.code = 'EMAIL_NOT_CONFIGURED';
+    throw error;
+  }
+};
+
 const createTransport = () => {
   if (cachedTransporter) {
     return cachedTransporter;
@@ -31,12 +45,16 @@ const createTransport = () => {
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
+    requireTLS: true,
     auth: { user, pass },
     pool: true,
     maxConnections: 2,
     maxMessages: 50,
     rateDelta: 1000,
     rateLimit: 5,
+    connectionTimeout: 15000,
+    greetingTimeout: 15000,
+    socketTimeout: 20000,
   });
 
   return cachedTransporter;
@@ -101,4 +119,6 @@ module.exports = {
   sendOtpEmail,
   sendOtpEmailBackground,
   getMailConfig,
+  isOtpDevMode,
+  assertMailReady,
 };

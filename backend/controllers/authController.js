@@ -4,7 +4,12 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const EmailOtp = require('../models/EmailOtp');
 const ProviderProfile = require('../models/ProviderProfile');
-const { sendOtpEmailBackground } = require('../utils/emailService');
+const {
+  sendOtpEmail,
+  sendOtpEmailBackground,
+  isOtpDevMode,
+  assertMailReady,
+} = require('../utils/emailService');
 const { deleteUploadedFile } = require('../middleware/uploadMiddleware');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -65,8 +70,15 @@ const issueOtp = async ({ email, purpose, payload }) => {
     expiresAt: new Date(Date.now() + OTP_TTL_MS),
   });
 
-  // Do not block the HTTP response on Gmail SMTP (often 2–5s).
-  sendOtpEmailBackground({ to: normalizedEmail, code, purpose });
+  assertMailReady();
+
+  // Production waits for Gmail so "code sent" is only shown when the email went out.
+  // Local dev keeps SMTP off the request path so the UI stays fast.
+  if (process.env.NODE_ENV === 'production' && !isOtpDevMode()) {
+    await sendOtpEmail({ to: normalizedEmail, code, purpose });
+  } else {
+    sendOtpEmailBackground({ to: normalizedEmail, code, purpose });
+  }
   return { email: normalizedEmail, expiresInMinutes: 10 };
 };
 

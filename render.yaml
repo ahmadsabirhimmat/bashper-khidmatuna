@@ -21,7 +21,7 @@ services:
       - key: JWT_SECRET
         sync: false
       - key: CLIENT_URL
-        sync: false
+        value: https://bashper-khidmatuna-1.onrender.com,https://bashper-khidmatuna-provider.onrender.com
       - key: ADMIN_EMAIL
         sync: false
       - key: ADMIN_PASSWORD
