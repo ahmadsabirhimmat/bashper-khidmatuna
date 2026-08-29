@@ -1,0 +1,12 @@
+{
+  "name": "bashper-khidmatuna",
+  "private": true,
+  "description": "Wrapper so Render can build from the repo root",
+  "scripts": {
+    "start": "npm start --prefix backend",
+    "postinstall": "npm install --prefix backend"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}
