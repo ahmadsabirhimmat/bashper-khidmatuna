@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+html,
+body,
+#root,
+.app-layout,
+header,
+footer,
+main {
+  max-width: 100%;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  background: #f8fafc;
+}
+
+#root {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  font-family: ubuntu, sans-serif;
+  font-weight: bold;
+  box-sizing: border-box;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  font-size: 16px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  max-width: none;
+  width: auto;
+}
+
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.app-layout > main {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+}
+
+.page-shell {
+  width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+  padding-inline: max(1rem, env(safe-area-inset-left, 0px)) max(1rem, env(safe-area-inset-right, 0px));
+  padding-block: 2rem 2.5rem;
+}
+
+.hero-pad {
+  overflow: hidden;
+  padding: 1.5rem 1.25rem;
+}
+
+.form-card {
+  min-width: 0;
+  max-width: 100%;
+  padding: 1.5rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .page-shell {
+    padding-inline: max(1.5rem, env(safe-area-inset-left, 0px)) max(1.5rem, env(safe-area-inset-right, 0px));
+    padding-block: 3rem;
+  }
+
+  .hero-pad {
+    padding: 2.5rem 2rem;
+  }
+
+  .form-card {
+    padding: 2.5rem 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero-pad {
+    padding: 3.5rem 2.5rem;
+  }
+}
+
+@media (max-width: 639px) {
+  :not(input):not(textarea)[class*="tracking-[0."] {
+    letter-spacing: 0.12em;
+  }
+}
+
+h1,
+h2,
+h3,
+p,
+li,
+dd,
+dt,
+footer,
+.form-card,
+.page-shell {
+  overflow-wrap: anywhere;
+}
+
+table {
+  text-align: start;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  vertical-align: middle;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+button,
+a {
+  max-width: 100%;
+  min-width: 0;
+}
+
+header nav ul li {
+  font: bold 16px ubuntu, sans-serif;
+  text-transform: uppercase;
+}
+
+header nav ul li .nav-link {
+  color: #ffffff;
+  transition: color 0.3s ease-in-out;
+}
+
+header nav ul li .nav-link:hover {
+  color: #000000;
+}
+
+header nav ul li .nav-link.active {
+  color: #000000;
+}

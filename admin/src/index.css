@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500&display=swap');
+
+:root {
+  font-family: 'Space Grotesk', 'Noto Naskh Arabic', 'Segoe UI', sans-serif;
+  line-height: 1.4;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --accent: #65e2d9;
+  --accent-soft: rgba(101, 226, 217, 0.12);
+  --plum: #c084fc;
+  --plum-soft: rgba(192, 132, 252, 0.12);
+  --citrine: #fcd34d;
+  --citrine-soft: rgba(252, 211, 77, 0.12);
+  --jade: #34d399;
+  --jade-soft: rgba(52, 211, 153, 0.12);
+  --danger: #f47171;
+  --danger-soft: rgba(244, 113, 113, 0.12);
+  --amber: #fbbf24;
+  --amber-soft: rgba(251, 191, 36, 0.16);
+  --violet: #a78bfa;
+  --violet-soft: rgba(167, 139, 250, 0.14);
+  --logo-ink: #030912;
+  --primary-ink: #04121b;
+}
+
+:root,
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --text: #e2ebff;
+  --text-secondary: #9fb5d1;
+  --muted: #617096;
+  --slate-100: #e2ebff;
+  --slate-200: #9fb5d1;
+  --page-bg: #050915;
+  --page-glow: radial-gradient(circle at top, #0c162c, #050915 60%);
+  --shell-bg: radial-gradient(circle at top, #0d162d 0%, #040710 60%);
+  --content-bg: linear-gradient(180deg, rgba(8, 13, 28, 0.92), rgba(6, 10, 22, 0.98));
+  --sidebar-bg: linear-gradient(180deg, rgba(9, 16, 36, 0.9), rgba(7, 10, 24, 0.95));
+  --topbar-bg: rgba(5, 9, 20, 0.75);
+  --panel-surface: rgba(7, 12, 26, 0.85);
+  --hero-bg: linear-gradient(135deg, rgba(6, 12, 30, 0.9), rgba(10, 20, 40, 0.9));
+  --card-bg: rgba(10, 15, 30, 0.72);
+  --ticket-bg: rgba(11, 16, 34, 0.75);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.05);
+  --border-mid: rgba(255, 255, 255, 0.06);
+  --border-strong: rgba(255, 255, 255, 0.2);
+  --hover-fill: rgba(255, 255, 255, 0.04);
+  --chip-fill: rgba(255, 255, 255, 0.08);
+  --tag-fill: rgba(255, 255, 255, 0.06);
+  --input-bg: #10192e;
+  --input-bg-soft: #10192e;
+  --login-input-bg: #0c1428;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239fb5d1' d='M1.2 1.5L6 6.3l4.8-4.8'/%3E%3C/svg%3E");
+  --shadow: 0 25px 60px rgba(5, 9, 21, 0.5);
+  --login-shadow: 0 20px 80px rgba(5, 9, 21, 0.65);
+  --overlay: rgba(2, 6, 18, 0.72);
+  --empty-bg: rgba(255, 255, 255, 0.03);
+  --empty-border: rgba(255, 255, 255, 0.12);
+  --callout-bg: radial-gradient(circle at top, rgba(101, 226, 217, 0.2), rgba(5, 10, 20, 0.7));
+  --sidebar-glow: radial-gradient(circle, rgba(101, 226, 217, 0.18), transparent 70%);
+  --nav-active-bg: linear-gradient(120deg, rgba(101, 226, 217, 0.12), rgba(167, 139, 250, 0.08));
+  --panel-bg: radial-gradient(circle at 20% 20%, rgba(101, 226, 217, 0.18), transparent 45%),
+    linear-gradient(135deg, rgba(12, 19, 38, 0.95), rgba(9, 12, 26, 0.94));
+  --icon-muted: rgba(226, 232, 240, 0.85);
+  --icon-hover: #ffffff;
+  --drawer-shadow: 18px 0 40px rgba(0, 0, 0, 0.35);
+  --glow-opacity: 0.55;
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+  --accent: #0f9c94;
+  --accent-soft: rgba(15, 156, 148, 0.14);
+  --text: #0f172a;
+  --text-secondary: #334155;
+  --muted: #64748b;
+  --slate-100: #0f172a;
+  --slate-200: #334155;
+  --page-bg: #eef2f8;
+  --page-glow: radial-gradient(circle at top, #f8fafc, #e8eef6 62%);
+  --shell-bg: radial-gradient(circle at top, #e8eef8 0%, #dce4f0 70%);
+  --content-bg: linear-gradient(180deg, #f6f8fc, #eef2f7);
+  --sidebar-bg: linear-gradient(180deg, #ffffff, #f3f6fb);
+  --topbar-bg: rgba(255, 255, 255, 0.9);
+  --panel-surface: #ffffff;
+  --hero-bg: linear-gradient(135deg, #ffffff, #eef6f5);
+  --card-bg: #f8fafc;
+  --ticket-bg: #ffffff;
+  --border: rgba(15, 23, 42, 0.1);
+  --border-soft: rgba(15, 23, 42, 0.06);
+  --border-mid: rgba(15, 23, 42, 0.08);
+  --border-strong: rgba(15, 23, 42, 0.18);
+  --hover-fill: rgba(15, 23, 42, 0.04);
+  --chip-fill: rgba(15, 23, 42, 0.06);
+  --tag-fill: rgba(15, 156, 148, 0.1);
+  --input-bg: #ffffff;
+  --input-bg-soft: #ffffff;
+  --login-input-bg: #ffffff;
+  --select-chevron: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23334155' d='M1.2 1.5L6 6.3l4.8-4.8'/%3E%3C/svg%3E");
+  --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+  --login-shadow: 0 20px 50px rgba(15, 23, 42, 0.1);
+  --overlay: rgba(15, 23, 42, 0.42);
+  --empty-bg: rgba(15, 23, 42, 0.03);
+  --empty-border: rgba(15, 23, 42, 0.16);
+  --callout-bg: radial-gradient(circle at top, rgba(15, 156, 148, 0.16), #ffffff 72%);
+  --sidebar-glow: radial-gradient(circle, rgba(15, 156, 148, 0.16), transparent 70%);
+  --nav-active-bg: linear-gradient(120deg, rgba(15, 156, 148, 0.16), rgba(124, 58, 237, 0.08));
+  --panel-bg: linear-gradient(135deg, #ffffff, #f4f8f8);
+  --icon-muted: #64748b;
+  --icon-hover: #0f172a;
+  --drawer-shadow: 18px 0 40px rgba(15, 23, 42, 0.14);
+  --glow-opacity: 0.22;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+  color: var(--text);
+  background-color: var(--page-bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  min-width: 0;
+  overflow-x: hidden;
+  background: var(--page-glow);
+  color: var(--text);
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+input:not([type='checkbox']):not([type='radio']):not([type='file']),
+select,
+textarea {
+  max-width: 100%;
+  min-width: 0;
+  font-size: 16px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
