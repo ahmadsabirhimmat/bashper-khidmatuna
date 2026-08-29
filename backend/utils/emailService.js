@@ -1,4 +1,11 @@
+const dns = require('dns');
 const nodemailer = require('nodemailer');
+
+// Render's outbound network is IPv4-only. Node 17+ prefers IPv6, which
+// makes smtp.gmail.com fail with ENETUNREACH on 2607:f8b0:...:587.
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 let cachedTransporter = null;
 
@@ -46,6 +53,7 @@ const createTransport = () => {
     port: 587,
     secure: false,
     requireTLS: true,
+    family: 4,
     auth: { user, pass },
     pool: true,
     maxConnections: 2,
@@ -109,7 +117,7 @@ const sendOtpEmailBackground = (payload) => {
     .catch((error) => {
       console.error('[otp-email] Background send failed:', error.message);
       // Reset transporter if the pooled connection went bad.
-      if (/ECONNECTION|ETIMEDOUT|EAUTH|Invalid login/i.test(String(error.message || ''))) {
+      if (/ECONNECTION|ETIMEDOUT|ENETUNREACH|EAUTH|Invalid login/i.test(String(error.message || ''))) {
         cachedTransporter = null;
       }
     });

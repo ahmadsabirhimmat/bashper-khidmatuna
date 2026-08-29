@@ -47,6 +47,12 @@ const respondMailError = (res, error, fallbackMessage) => {
   }
 
   const msg = String(error.message || '');
+  if (/ENETUNREACH|ETIMEDOUT|ECONNECTION/i.test(msg)) {
+    return res.status(503).json({
+      message:
+        'Could not reach Gmail from the server. Please try again in a moment.',
+    });
+  }
   if (/Invalid login|BadCredentials|Username and Password not accepted/i.test(msg)) {
     return res.status(503).json({
       message:
