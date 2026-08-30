@@ -34,6 +34,12 @@ services:
         sync: false
       - key: GMAIL_APP_PASSWORD
         sync: false
+      - key: BREVO_API_KEY
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: MAIL_FROM
+        sync: false
       - key: OTP_DEV_MODE
         value: "false"
 

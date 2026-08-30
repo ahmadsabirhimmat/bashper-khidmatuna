@@ -16,7 +16,7 @@ const siteRoutes = require('./routes/siteRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const criticalContactRoutes = require('./routes/criticalContactRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
-const { getMailConfig, isOtpDevMode } = require('./utils/emailService');
+const { getMailConfig, getMailTransport, isOtpDevMode } = require('./utils/emailService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -131,11 +131,12 @@ app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 app.use(morgan(isDev ? 'dev' : 'combined'));
 
 app.get('/health', (req, res) => {
-	const { user, pass } = getMailConfig();
+	const transport = getMailTransport();
 	res.json({
 		status: 'ok',
 		service: 'emergency-contacts',
-		mailConfigured: Boolean(user && pass),
+		mailConfigured: transport !== 'none',
+		mailTransport: transport,
 		otpDevMode: isOtpDevMode(),
 	});
 });
@@ -175,11 +176,17 @@ const startServer = async () => {
 		await ensureCriticalContacts();
 		const host = process.env.HOST || (isDev ? undefined : '0.0.0.0');
 		const onListen = () => {
-			const { user, pass } = getMailConfig();
+			const { user } = getMailConfig();
+			const transport = getMailTransport();
 			console.log(`Emergency Contacts API listening on ${host || 'all interfaces'}:${PORT}`);
-			console.log(
-				`Mail: ${isOtpDevMode() ? 'OTP_DEV_MODE (codes in logs only)' : user && pass ? `Gmail SMTP as ${user}` : 'NOT CONFIGURED — set GMAIL_USER and GMAIL_APP_PASSWORD'}`
-			);
+			const mailLabel = {
+				dev: 'OTP_DEV_MODE (codes in logs only)',
+				brevo: `Brevo HTTPS as ${user || 'MAIL_FROM'}`,
+				resend: `Resend HTTPS as ${user || 'MAIL_FROM'}`,
+				smtp: `Gmail SMTP as ${user}`,
+				none: 'NOT CONFIGURED — on Render free set BREVO_API_KEY or RESEND_API_KEY',
+			}[transport];
+			console.log(`Mail: ${mailLabel}`);
 			if (!isDev) {
 				console.log('CORS allowlist:', allowedOrigins.join(', ') || '(empty)');
 			}

@@ -50,8 +50,11 @@ const respondMailError = (res, error, fallbackMessage) => {
   if (/ENETUNREACH|ETIMEDOUT|ECONNECTION/i.test(msg)) {
     return res.status(503).json({
       message:
-        'Could not reach Gmail from the server. Please try again in a moment.',
+        'Render free plans block Gmail SMTP. Upgrade the API to a paid instance, or set BREVO_API_KEY / RESEND_API_KEY to send OTP email over HTTPS.',
     });
+  }
+  if (error.code === 'EMAIL_HTTP_FAILED' || error.code === 'EMAIL_AUTH_FAILED') {
+    return res.status(503).json({ message: error.message });
   }
   if (/Invalid login|BadCredentials|Username and Password not accepted/i.test(msg)) {
     return res.status(503).json({
