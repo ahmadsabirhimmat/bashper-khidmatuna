@@ -6,6 +6,16 @@ const PROD_FALLBACK = "https://bashper-khidmatuna.onrender.com";
 
 export const API_BASE_URL = fromEnv || (__DEV__ ? DEV_FALLBACK : PROD_FALLBACK);
 
+export const PROVIDER_APP_URL = "https://bashper-khidmatuna-provider.onrender.com";
+
+export const DEVELOPER_CONTACT = {
+  name: "Ahmad Sabir Himmat",
+  email: "ahmadsabirhimmat@gmail.com",
+  whatsapp: "+93700784854",
+  whatsappDisplay: "+93 700 784 854",
+  whatsappUrl: "https://wa.me/93700784854",
+};
+
 if (!API_BASE_URL && !__DEV__) {
   console.error(
     "EXPO_PUBLIC_API_URL is required for store builds. Set it to your live HTTPS API before EAS Build."
@@ -387,6 +397,17 @@ export const translations = {
   aboutCritical: i18n("Critical lines", "مهم شمېرې", "خطوط حیاتی"),
   aboutFieldUnits: i18n("Field units", "میداني واحدونه", "واحدهای میدانی"),
   aboutBack: i18n("Back to profile", "بیرته پروفایل ته", "بازگشت به پروفایل"),
+  providerPortalTitle: i18n("Provider portal", "د خدمت کوونکو پاڼه", "پورتال ارائه‌دهنده"),
+  providerPortalBody: i18n(
+    "Add or update your emergency service listing in the provider app.",
+    "خپل بیړنی خدمت په د خدمت کوونکو اپ کې اضافه یا تازه کړئ.",
+    "فهرست خدمات اضطراری خود را در اپ ارائه‌دهنده اضافه یا به‌روز کنید."
+  ),
+  providerPortalOpen: i18n("Open provider app", "د خدمت کوونکو اپ پرانیزئ", "باز کردن اپ ارائه‌دهنده"),
+  developerTitle: i18n("Contact the developer", "له جوړونکي سره اړیکه", "تماس با سازنده"),
+  developerName: i18n("Ahmad Sabir Himmat", "احمد صابر همت", "احمد صابر همت"),
+  developerWhatsApp: i18n("WhatsApp", "واټساپ", "واتساپ"),
+  developerEmail: i18n("Email", "بریښنالیک", "ایمیل"),
   privacyTitle: i18n("Privacy policy", "د محرمیت تګلاره", "سیاست حریم خصوصی"),
   privacyLegal: i18n("Legal", "قانوني", "حقوقی"),
   privacyOpen: i18n("Read privacy policy", "د محرمیت تګلاره ولولئ", "خواندن سیاست حریم خصوصی"),

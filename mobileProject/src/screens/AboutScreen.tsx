@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useAppContext } from "@/src/context/AppContext";
 import { fetchAboutOverview, type AboutOverview } from "@/src/services/api";
+import { DeveloperContactCard } from "@/src/components/DeveloperContactCard";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 
 const AboutScreen = () => {
@@ -102,6 +103,8 @@ const AboutScreen = () => {
           </View>
         ) : null}
       </View>
+
+      <DeveloperContactCard showProviderLink colors={colors} />
 
       <Pressable
         style={[styles.backBtn, { borderColor: colors.border, backgroundColor: colors.surface }]}

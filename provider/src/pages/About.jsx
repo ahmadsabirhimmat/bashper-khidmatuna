@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchAboutOverview } from "../api/about";
+import { DeveloperContact } from "../components/DeveloperContact";
 import { SERVICE_TYPES, districtLabel } from "../data/serviceOptions";
 
 const formatNumber = (value) => {
@@ -285,6 +286,10 @@ export const About = () => {
                     </div>
                 </>
             ) : null}
+
+            <div className="mt-10">
+                <DeveloperContact translate={translate} variant="light" />
+            </div>
         </section>
     );
 };

@@ -9,6 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
+    "build:apk": "eas build --platform android --profile preview",
     "postinstall": "node ./scripts/patch-css-interop-safe-area.js"
   },
   "dependencies": {

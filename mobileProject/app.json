@@ -2,6 +2,7 @@
   "expo": {
     "name": "Bashper Khidmatuna",
     "slug": "bashper-khidmatuna",
+    "owner": "sabirhimmatts-team",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -62,10 +63,16 @@
           "isAndroidBackgroundLocationEnabled": false
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-notifications"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6bd1f059-45eb-4a95-811f-400dc8cbfe40"
+      }
     }
   }
 }

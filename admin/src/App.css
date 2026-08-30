@@ -212,6 +212,31 @@ body,
   color: var(--danger);
 }
 
+.sidebar__developer {
+  margin: 1rem 0 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.sidebar__developer-name {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.sidebar__developer-link {
+  font-size: 0.78rem;
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.sidebar__developer-link:hover {
+  text-decoration: underline;
+}
+
 /* Top bar */
 .topbar {
   padding: 1rem clamp(1rem, 3vw, 3rem);
@@ -438,6 +463,37 @@ body,
   margin: 0;
   font-size: 0.9rem;
   color: var(--muted);
+}
+
+.login-developer {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.login-developer__title {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.login-developer__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.login-developer a {
+  color: var(--accent);
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 0.9rem;
+}
+
+.login-developer a:hover {
+  text-decoration: underline;
 }
 
 .hero__tags {

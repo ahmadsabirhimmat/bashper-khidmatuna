@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchSiteContact } from "../api/site";
+import { DeveloperContact } from "../components/DeveloperContact";
 
 const pickLocalized = (value, language, fallback = "") => {
     if (!value) return fallback;
@@ -128,8 +129,15 @@ export const Contact = () => {
                             {pickLocalized(contact.responseNote, language)}
                         </div>
                     ) : null}
+                    <div className="mt-8">
+                        <DeveloperContact translate={translate} variant="onDark" />
+                    </div>
                 </div>
-            ) : null}
+            ) : (
+                <div className="mt-10">
+                    <DeveloperContact translate={translate} variant="light" />
+                </div>
+            )}
         </section>
     );
 };

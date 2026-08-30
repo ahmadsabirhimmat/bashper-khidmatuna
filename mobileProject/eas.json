@@ -21,21 +21,12 @@
       }
     },
     "production": {
+      "distribution": "internal",
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk"
       },
       "env": {
         "EXPO_PUBLIC_API_URL": "https://bashper-khidmatuna.onrender.com"
-      }
-    }
-  },
-  "submit": {
-    "production": {
-      "android": {
-        "track": "internal"
-      },
-      "ios": {
-        "ascAppId": "REPLACE_WITH_APP_STORE_CONNECT_APP_ID"
       }
     }
   }

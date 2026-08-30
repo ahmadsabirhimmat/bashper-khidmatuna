@@ -15,23 +15,23 @@ const DEFAULT_CONTACT = {
     dr: 'با استفاده از جزئیات زیر مستقیماً با ما تماس بگیرید.',
   },
   emergencyLabel: {
-    en: 'Emergency Onboarding',
-    ps: 'بیړنۍ شاملول',
-    dr: 'ثبت‌نام اضطراری',
+    en: 'WhatsApp',
+    ps: 'واټساپ',
+    dr: 'واتساپ',
   },
-  emergencyPhone: '+93 799 900 111',
+  emergencyPhone: '+93700784854',
   technicalLabel: {
-    en: 'Technical Operations',
-    ps: 'تخنیکي چارې',
-    dr: 'عملیات تخنیکی',
+    en: 'Developer',
+    ps: 'جوړونکی',
+    dr: 'سازنده',
   },
-  technicalPhone: '+93 780 220 330',
+  technicalPhone: '+93700784854',
   emailLabel: {
     en: 'Email',
     ps: 'بریښنالیک',
     dr: 'ایمیل',
   },
-  email: 'support@bashperkhidmatuna.com',
+  email: 'ahmadsabirhimmat@gmail.com',
   addressLabel: {
     en: 'Office Address',
     ps: 'د دفتر پته',
@@ -56,10 +56,26 @@ const DEFAULT_CONTACT = {
 
 const ensureSiteContact = async () => {
   const existing = await SiteContact.findOne({ key: CONTACT_KEY });
-  if (existing) {
-    return existing;
+  if (!existing) {
+    return SiteContact.create(DEFAULT_CONTACT);
   }
-  return SiteContact.create(DEFAULT_CONTACT);
+
+  const email = String(existing.email || '').toLowerCase();
+  const usedPlaceholder =
+    email === 'support@bashperkhidmatuna.com' ||
+    existing.emergencyPhone === '+93 799 900 111' ||
+    existing.technicalPhone === '+93 780 220 330';
+
+  if (usedPlaceholder) {
+    existing.emergencyLabel = DEFAULT_CONTACT.emergencyLabel;
+    existing.emergencyPhone = DEFAULT_CONTACT.emergencyPhone;
+    existing.technicalLabel = DEFAULT_CONTACT.technicalLabel;
+    existing.technicalPhone = DEFAULT_CONTACT.technicalPhone;
+    existing.email = DEFAULT_CONTACT.email;
+    await existing.save();
+  }
+
+  return existing;
 };
 
 const getSiteContact = async (req, res) => {

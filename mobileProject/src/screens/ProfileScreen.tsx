@@ -13,6 +13,7 @@ import { useRouter } from "expo-router";
 import { useAppContext } from "@/src/context/AppContext";
 import { fetchAboutOverview, type AboutOverview } from "@/src/services/api";
 import { LANGUAGE_CYCLE, LANGUAGE_LABELS, type LanguageCode } from "@/src/utils/types";
+import { DeveloperContactCard } from "@/src/components/DeveloperContactCard";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 
 const LANGUAGE_OPTIONS: Record<
@@ -404,6 +405,8 @@ const ProfileScreen = () => {
           <Ionicons name="chevron-forward" size={18} color={colors.primary} />
         </Pressable>
       </View>
+
+      <DeveloperContactCard showProviderLink colors={colors} />
 
       {user ? (
         <View style={[styles.section, { backgroundColor: colors.surface }]}>

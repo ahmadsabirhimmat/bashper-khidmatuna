@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { pingHealth } from '../../api/health.js';
 import { useLanguage } from '../../context/LanguageContext.jsx';
 import ThemeToggle from '../common/ThemeToggle.jsx';
+import { DEVELOPER_CONTACT } from '../../data/developer.js';
 
 const NAV_ITEMS = [
   {
@@ -147,6 +148,16 @@ const Sidebar = ({ onNavigate }) => {
               {item.label}
             </button>
           ))}
+        </div>
+        <div className="sidebar__developer">
+          <p className="sidebar__footnote">{translate('Developer', 'جوړونکی', 'سازنده')}</p>
+          <p className="sidebar__developer-name">{DEVELOPER_CONTACT.name}</p>
+          <a className="sidebar__developer-link" href={DEVELOPER_CONTACT.whatsappUrl} target="_blank" rel="noreferrer">
+            {translate('WhatsApp', 'واټساپ', 'واتساپ')} · {DEVELOPER_CONTACT.whatsappDisplay}
+          </a>
+          <a className="sidebar__developer-link" href={`mailto:${DEVELOPER_CONTACT.email}`}>
+            {DEVELOPER_CONTACT.email}
+          </a>
         </div>
         <p className={`sidebar__footnote ${apiOnline === false ? 'sidebar__footnote--alert' : ''}`}>
           {statusLabel}
