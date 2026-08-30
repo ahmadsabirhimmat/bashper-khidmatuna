@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import EmptyState from '../components/common/EmptyState.jsx';
+import ProviderImage from '../components/common/ProviderImage.jsx';
 import StatusBadge from '../components/common/StatusBadge.jsx';
 import { deleteProviderProfile, fetchProviders, reviewProviderStatus } from '../api/providers.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
@@ -146,19 +147,11 @@ const ProvidersPage = () => {
               {providers.map((provider) => (
                 <tr key={provider._id}>
                   <td>
-                    {provider.imageUrl ? (
-                      <a href={provider.imageUrl} target="_blank" rel="noreferrer" className="provider-image-link">
-                        <img
-                          src={provider.imageUrl}
-                          alt={provider.organizationName}
-                          className="provider-image"
-                        />
-                      </a>
-                    ) : (
-                      <div className="provider-image provider-image--empty" aria-hidden="true">
-                        {t('noImage')}
-                      </div>
-                    )}
+                    <ProviderImage
+                      src={provider.imageUrl}
+                      alt={provider.organizationName}
+                      emptyLabel={t('noImage')}
+                    />
                   </td>
                   <td>
                     <strong>{provider.organizationName}</strong>
@@ -217,19 +210,11 @@ const ProvidersPage = () => {
             {providers.map((provider) => (
               <article key={`card-${provider._id}`} className="data-card">
                 <div className="data-card__top">
-                  {provider.imageUrl ? (
-                    <a href={provider.imageUrl} target="_blank" rel="noreferrer" className="provider-image-link">
-                      <img
-                        src={provider.imageUrl}
-                        alt={provider.organizationName}
-                        className="provider-image"
-                      />
-                    </a>
-                  ) : (
-                    <div className="provider-image provider-image--empty" aria-hidden="true">
-                      {t('noImage')}
-                    </div>
-                  )}
+                  <ProviderImage
+                    src={provider.imageUrl}
+                    alt={provider.organizationName}
+                    emptyLabel={t('noImage')}
+                  />
                   <div className="data-card__body">
                     <strong>{provider.organizationName}</strong>
                     {provider.organizationNameLocal ? (

@@ -6,6 +6,32 @@ const fallbackDevBase = 'http://localhost:4000';
 const baseFromEnv = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
 const resolvedBase = baseFromEnv || (isDev ? fallbackDevBase : PRODUCTION_API);
 const API_BASE_URL = resolvedBase;
+
+export const resolveImageUrl = (imageUrl) => {
+  if (!imageUrl || typeof imageUrl !== 'string') {
+    return '';
+  }
+  const trimmed = imageUrl.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^data:/i.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.pathname.startsWith('/uploads/')) {
+        return `${API_BASE_URL}${parsed.pathname}`;
+      }
+    } catch {
+      return trimmed;
+    }
+    return trimmed;
+  }
+  const pathname = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return `${API_BASE_URL}${pathname}`;
+};
 const AUTH_EVENT = 'bk-auth-expired';
 
 const buildUrl = (path) => {

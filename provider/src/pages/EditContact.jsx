@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
 import { getProviderById, updateProviderProfile } from "../api/providers";
+import { resolveImageUrl } from "../api/http";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { KANDAHAR_DISTRICTS, SERVICE_TYPES, districtLabel } from "../data/serviceOptions";
@@ -64,7 +65,7 @@ export const EditContact = () => {
                     availability: provider.availability || "",
                     description: provider.description || "",
                 });
-                setImagePreview(provider.imageUrl || "");
+                setImagePreview(resolveImageUrl(provider.imageUrl || ""));
                 setImageFile(null);
                 setRemoveImage(false);
             } catch (err) {

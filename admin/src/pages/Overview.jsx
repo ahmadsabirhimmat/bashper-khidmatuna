@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import MetricCard from '../components/common/MetricCard.jsx';
 import EmptyState from '../components/common/EmptyState.jsx';
+import ProviderImage from '../components/common/ProviderImage.jsx';
 import { fetchCriticalContacts } from '../api/criticalContacts.js';
 import { fetchProviders } from '../api/providers.js';
 import { useLanguage } from '../context/LanguageContext.jsx';
@@ -145,7 +146,7 @@ const OverviewPage = () => {
                                     <li key={item._id}>
                                         <div className="timeline__main">
                                             {item.imageUrl ? (
-                                                <img
+                                                <ProviderImage
                                                     src={item.imageUrl}
                                                     alt={item.organizationName}
                                                     className="provider-image provider-image--sm"

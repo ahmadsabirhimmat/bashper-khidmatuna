@@ -2,8 +2,8 @@ const { validationResult } = require('express-validator');
 const ProviderProfile = require('../models/ProviderProfile');
 const {
   absoluteImageUrl,
+  buildStoredImage,
   deleteUploadedFile,
-  toPublicImagePath,
 } = require('../middleware/uploadMiddleware');
 
 const buildFilters = (query) => {
@@ -33,27 +33,33 @@ const formatValidationErrors = (errors) => {
 
 const serializeProvider = (provider, req) => {
   const doc = typeof provider.toObject === 'function' ? provider.toObject() : { ...provider };
+  delete doc.imageData;
   return {
     ...doc,
     imageUrl: absoluteImageUrl(req, doc.imageUrl || ''),
   };
 };
 
+const applyUploadedImage = (target, file) => {
+  const stored = buildStoredImage(file);
+  if (!stored) {
+    return false;
+  }
+  target.imageUrl = stored.publicPath;
+  target.imageMimeType = stored.mimeType;
+  target.imageData = stored.data;
+  return true;
+};
+
 const createProviderProfile = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    if (req.file) {
-      deleteUploadedFile(toPublicImagePath(req.file.filename));
-    }
     return res.status(400).json(formatValidationErrors(errors));
   }
 
   try {
     const ownerId = req.user?.id || req.body.ownerId;
     if (!ownerId) {
-      if (req.file) {
-        deleteUploadedFile(toPublicImagePath(req.file.filename));
-      }
       return res.status(400).json({ message: 'Owner context missing' });
     }
 
@@ -72,7 +78,8 @@ const createProviderProfile = async (req, res) => {
       email: req.body.email || undefined,
       location: req.body.location,
       district: req.body.district || '',
-      imageUrl: req.file ? toPublicImagePath(req.file.filename) : '',
+      imageUrl: '',
+      imageMimeType: '',
       availability: req.body.availability || undefined,
       description: req.body.description || undefined,
       tags: req.body.tags,
@@ -80,12 +87,11 @@ const createProviderProfile = async (req, res) => {
       status: initialStatus,
     };
 
+    applyUploadedImage(payload, req.file);
+
     const provider = await ProviderProfile.create(payload);
     res.status(201).json(serializeProvider(provider, req));
   } catch (error) {
-    if (req.file) {
-      deleteUploadedFile(toPublicImagePath(req.file.filename));
-    }
     console.error('Create provider error:', error.message);
     res.status(500).json({ message: 'Unable to create provider profile' });
   }
@@ -140,18 +146,12 @@ const getProviderById = async (req, res) => {
 const updateProvider = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    if (req.file) {
-      deleteUploadedFile(toPublicImagePath(req.file.filename));
-    }
     return res.status(400).json(formatValidationErrors(errors));
   }
 
   try {
     const provider = await ProviderProfile.findById(req.params.id);
     if (!provider) {
-      if (req.file) {
-        deleteUploadedFile(toPublicImagePath(req.file.filename));
-      }
       return res.status(404).json({ message: 'Provider not found' });
     }
 
@@ -159,9 +159,6 @@ const updateProvider = async (req, res) => {
     const isAdmin = req.user && req.user.role === 'admin';
 
     if (!isOwner && !isAdmin) {
-      if (req.file) {
-        deleteUploadedFile(toPublicImagePath(req.file.filename));
-      }
       return res.status(403).json({ message: 'Forbidden' });
     }
 
@@ -184,14 +181,12 @@ const updateProvider = async (req, res) => {
     };
 
     if (req.file) {
-      const previousImage = provider.imageUrl;
-      updates.imageUrl = toPublicImagePath(req.file.filename);
-      if (previousImage && previousImage !== updates.imageUrl) {
-        deleteUploadedFile(previousImage);
-      }
+      deleteUploadedFile(provider.imageUrl);
+      applyUploadedImage(updates, req.file);
     } else if (req.body.removeImage === 'true') {
       deleteUploadedFile(provider.imageUrl);
       updates.imageUrl = '';
+      updates.imageMimeType = '';
     }
 
     Object.keys(updates).forEach((key) => {
@@ -200,16 +195,18 @@ const updateProvider = async (req, res) => {
       }
     });
 
-    const updated = await ProviderProfile.findByIdAndUpdate(req.params.id, updates, {
+    const mongoUpdate = { $set: updates };
+    if (!req.file && req.body.removeImage === 'true') {
+      mongoUpdate.$unset = { imageData: 1 };
+    }
+
+    const updated = await ProviderProfile.findByIdAndUpdate(req.params.id, mongoUpdate, {
       new: true,
       runValidators: true,
     });
 
     res.json(serializeProvider(updated, req));
   } catch (error) {
-    if (req.file) {
-      deleteUploadedFile(toPublicImagePath(req.file.filename));
-    }
     console.error('Update provider error:', error.message);
     res.status(500).json({ message: 'Unable to update provider' });
   }

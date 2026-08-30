@@ -3,7 +3,33 @@ import { getAuthToken } from '../utils/authStorage';
 const isDev = import.meta.env.DEV;
 const PRODUCTION_API = 'https://bashper-khidmatuna.onrender.com';
 const fromEnv = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
-const API_BASE_URL = fromEnv || (isDev ? 'http://localhost:4000' : PRODUCTION_API);
+export const API_BASE_URL = fromEnv || (isDev ? 'http://localhost:4000' : PRODUCTION_API);
+
+export const resolveImageUrl = (imageUrl) => {
+  if (!imageUrl || typeof imageUrl !== 'string') {
+    return '';
+  }
+  const trimmed = imageUrl.trim();
+  if (!trimmed) {
+    return '';
+  }
+  if (/^data:/i.test(trimmed)) {
+    return trimmed;
+  }
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.pathname.startsWith('/uploads/')) {
+        return `${API_BASE_URL}${parsed.pathname}`;
+      }
+    } catch {
+      return trimmed;
+    }
+    return trimmed;
+  }
+  const pathname = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return `${API_BASE_URL}${pathname}`;
+};
 
 const buildUrl = (path) => {
   if (!path.startsWith('/')) {

@@ -17,6 +17,9 @@ const providerSchema = new mongoose.Schema(
     location: { type: String, required: true, trim: true },
     district: { type: String, trim: true, default: '' },
     imageUrl: { type: String, trim: true, default: '' },
+    imageMimeType: { type: String, trim: true, default: '' },
+    /** Stored in Mongo so photos survive Render’s ephemeral disk. Never returned on list APIs. */
+    imageData: { type: Buffer, select: false },
     availability: { type: String, trim: true },
     description: { type: String, trim: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
@@ -29,5 +32,19 @@ const providerSchema = new mongoose.Schema(
 
 providerSchema.index({ status: 1, serviceType: 1 });
 providerSchema.index({ district: 1, status: 1 });
+providerSchema.index({ imageUrl: 1 });
+
+providerSchema.set('toJSON', {
+  transform: (_doc, ret) => {
+    delete ret.imageData;
+    return ret;
+  },
+});
+providerSchema.set('toObject', {
+  transform: (_doc, ret) => {
+    delete ret.imageData;
+    return ret;
+  },
+});
 
 module.exports = mongoose.model('ProviderProfile', providerSchema);

@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { deleteProviderProfile, fetchMyProviders } from "../api/providers";
+import { resolveImageUrl } from "../api/http";
 
 const serviceLabels = {
     hospital: { en: "Hospital", ps: "روغتون", dr: "شفاخانه" },
@@ -29,12 +30,20 @@ const statusClass = (status) => {
 
 const ProviderThumb = ({ src, alt }) => {
     const box = "h-20 w-20 shrink-0 rounded-2xl";
-    if (src) {
+    const resolved = resolveImageUrl(src);
+    const [failed, setFailed] = useState(false);
+
+    useEffect(() => {
+        setFailed(false);
+    }, [resolved]);
+
+    if (resolved && !failed) {
         return (
             <img
-                src={src}
+                src={resolved}
                 alt={alt}
                 className={`${box} border border-slate-200 object-cover`}
+                onError={() => setFailed(true)}
             />
         );
     }

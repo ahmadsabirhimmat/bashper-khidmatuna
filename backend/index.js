@@ -16,6 +16,7 @@ const siteRoutes = require('./routes/siteRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const criticalContactRoutes = require('./routes/criticalContactRoutes');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
+const { serveProviderImage } = require('./controllers/mediaController');
 const { getMailConfig, getMailTransport, isOtpDevMode } = require('./utils/emailService');
 
 const app = express();
@@ -23,6 +24,9 @@ const PORT = process.env.PORT || 3000;
 
 app.disable('etag');
 app.use((req, res, next) => {
+	if (req.path.startsWith('/uploads/')) {
+		return next();
+	}
 	res.set('Cache-Control', 'no-store');
 	next();
 });
@@ -117,6 +121,7 @@ const resolveCorsOrigin = (origin, callback) => {
 app.use(
 	helmet({
 		crossOriginResourcePolicy: { policy: 'cross-origin' },
+		contentSecurityPolicy: false,
 	})
 );
 app.use(
@@ -127,6 +132,7 @@ app.use(
 );
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.get('/uploads/:filename', serveProviderImage);
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 app.use(morgan(isDev ? 'dev' : 'combined'));
 

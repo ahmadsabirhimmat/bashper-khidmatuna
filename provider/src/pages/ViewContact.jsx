@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { getProviderById } from "../api/providers";
+import { resolveImageUrl } from "../api/http";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { districtLabel } from "../data/serviceOptions";
@@ -92,6 +93,7 @@ export const ViewContact = () => {
         en: provider.serviceType,
         ps: provider.serviceType,
     };
+    const photoUrl = resolveImageUrl(provider.imageUrl);
 
     return (
         <section className="page-shell max-w-5xl">
@@ -141,9 +143,9 @@ export const ViewContact = () => {
                             {provider.district ? (
                                 <p className="mt-1 text-sm text-slate-500">{districtLabel(provider.district, language)}</p>
                             ) : null}
-                            {provider.imageUrl ? (
+                            {photoUrl ? (
                                 <img
-                                    src={provider.imageUrl}
+                                    src={photoUrl}
                                     alt={provider.organizationName}
                                     className="mt-4 h-40 w-full rounded-2xl object-cover"
                                 />
