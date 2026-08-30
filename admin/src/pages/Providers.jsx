@@ -9,6 +9,22 @@ import { useDesktopTable } from '../hooks/useDesktopTable.js';
 const serviceTypes = ['police', 'ambulance', 'firefighters', 'hospital', 'pharmacy', 'clinic', 'ngo', 'rescue'];
 const statusOptions = ['pending', 'approved', 'rejected'];
 
+const ContactLines = ({ phone, altPhone, email }) => (
+  <div className="contact-stack">
+    <a className="contact-stack__phone" href={`tel:${phone}`} dir="ltr">
+      {phone}
+    </a>
+    {altPhone ? (
+      <a className="contact-stack__phone" href={`tel:${altPhone}`} dir="ltr">
+        {altPhone}
+      </a>
+    ) : null}
+    <span className="contact-stack__email" dir="ltr">
+      {email || '—'}
+    </span>
+  </div>
+);
+
 const ProvidersPage = () => {
   const { t, tService, tStatus, tDistrict } = useLanguage();
   const isDesktop = useDesktopTable();
@@ -132,7 +148,7 @@ const ProvidersPage = () => {
           <p>{t('loadingRoster')}</p>
         ) : providers.length ? (
           isDesktop ? (
-          <table className="data-table data-table--responsive">
+          <table className="data-table data-table--responsive data-table--providers">
             <thead>
               <tr>
                 <th>{t('colImage')}</th>
@@ -167,10 +183,12 @@ const ProvidersPage = () => {
                     <p>{tService(provider.serviceType)}</p>
                     <p className="table-subline">{provider.capabilities?.join(', ')}</p>
                   </td>
-                  <td>
-                    <p>{provider.phoneNumber}</p>
-                    {provider.altPhoneNumber ? <p>{provider.altPhoneNumber}</p> : null}
-                    <p className="table-subline">{provider.email || '—'}</p>
+                  <td className="contact-cell">
+                    <ContactLines
+                      phone={provider.phoneNumber}
+                      altPhone={provider.altPhoneNumber}
+                      email={provider.email}
+                    />
                   </td>
                   <td>
                     <StatusBadge value={provider.status} />
@@ -208,7 +226,7 @@ const ProvidersPage = () => {
           ) : (
           <div className="data-cards">
             {providers.map((provider) => (
-              <article key={`card-${provider._id}`} className="data-card">
+              <article key={`card-${provider._id}`} className="data-card data-card--provider">
                 <div className="data-card__top">
                   <ProviderImage
                     src={provider.imageUrl}
@@ -226,13 +244,15 @@ const ProvidersPage = () => {
                     <StatusBadge value={provider.status} />
                   </div>
                 </div>
-                <div>
+                <div className="data-card__field">
                   <p className="data-card__label">{t('colContact')}</p>
-                  <p className="data-card__value">{provider.phoneNumber}</p>
-                  {provider.altPhoneNumber ? <p className="data-card__value">{provider.altPhoneNumber}</p> : null}
-                  <p className="table-subline">{provider.email || '—'}</p>
+                  <ContactLines
+                    phone={provider.phoneNumber}
+                    altPhone={provider.altPhoneNumber}
+                    email={provider.email}
+                  />
                 </div>
-                <div>
+                <div className="data-card__field">
                   <p className="data-card__label">{t('colOrganization')}</p>
                   <p className="data-card__value">{provider.location}</p>
                   {provider.district ? <p className="table-subline">{tDistrict(provider.district)}</p> : null}
