@@ -34,7 +34,7 @@ export const Header = () => {
 
     return (
         <div className="relative z-50 w-full min-w-0">
-            <header className="w-full min-w-0 bg-blue-500 py-3 shadow-xl shadow-blue-300/50 pt-[max(0.75rem,env(safe-area-inset-top))]">
+            <header className="w-full min-w-0 bg-blue-500 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
                 <div className="mx-auto flex w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6">
                     <div id="navbar-brand" className="min-w-0 flex-1 overflow-hidden">
                         <NavLink to="/" className="block min-w-0" onClick={handleClose}>
