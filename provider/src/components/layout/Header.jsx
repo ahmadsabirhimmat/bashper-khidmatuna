@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { LanguageSwitcher } from "../LanguageSwitcher";
+import { ThemeToggle } from "../ThemeToggle";
 import { useLanguage } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
 
@@ -55,6 +56,7 @@ export const Header = () => {
                             </ul>
                         </nav>
                         <LanguageSwitcher />
+                        <ThemeToggle />
                         <div className="flex shrink-0 items-center gap-3">
                             {isAuthenticated ? (
                                 <button type="button" onClick={handleLogout} className={authBtn}>
@@ -73,6 +75,7 @@ export const Header = () => {
                         </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-2 sm:gap-3 xl:hidden">
+                        <ThemeToggle />
                         <LanguageSwitcher />
                         <button
                             type="button"

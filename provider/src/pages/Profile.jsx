@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { deleteAccount, fetchCurrentUser } from "../api/auth";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -137,6 +138,14 @@ export const Profile = () => {
                                 {translate("Register", "راجستر شئ", "ثبت‌نام")}
                             </NavLink>
                         </div>
+                        <div className="border-t border-slate-100 pt-6">
+                            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+                                {translate("Appearance", "بڼه", "ظاهر")}
+                            </p>
+                            <div className="mt-4 flex justify-center">
+                                <ThemeToggle variant="chips" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -256,6 +265,21 @@ export const Profile = () => {
                                 </div>
                             ))}
                         </dl>
+                        <div className="mt-6 border-t border-slate-100 pt-6">
+                            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+                                {translate("Appearance", "بڼه", "ظاهر")}
+                            </p>
+                            <p className="mt-2 text-sm text-slate-500">
+                                {translate(
+                                    "Choose light or dark for this device.",
+                                    "د دې وسیلې لپاره روښانه یا تیاره وټاکئ.",
+                                    "برای این دستگاه روشن یا تیره را انتخاب کنید."
+                                )}
+                            </p>
+                            <div className="mt-4">
+                                <ThemeToggle variant="chips" />
+                            </div>
+                        </div>
                     </div>
 
                     <div className="space-y-6">
