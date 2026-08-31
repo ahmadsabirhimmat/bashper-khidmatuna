@@ -11,6 +11,7 @@ const {
   deleteAccount,
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/authMiddleware');
+const { authLimiter, otpLimiter } = require('../middleware/rateLimit');
 
 const router = express.Router();
 
@@ -18,6 +19,7 @@ const otpPurposes = ['login', 'register', 'reset'];
 
 router.post(
   '/register',
+  authLimiter,
   [
     body('fullName').notEmpty().withMessage('Full name is required'),
     body('email').isEmail().withMessage('Valid email is required'),
@@ -34,6 +36,7 @@ router.post(
 
 router.post(
   '/login',
+  authLimiter,
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').notEmpty().withMessage('Password is required'),
@@ -43,12 +46,14 @@ router.post(
 
 router.post(
   '/forgot-password',
+  authLimiter,
   [body('email').isEmail().withMessage('Valid email is required')],
   forgotPassword
 );
 
 router.post(
   '/reset-password',
+  authLimiter,
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('resetToken').notEmpty().withMessage('Reset token is required'),
@@ -59,6 +64,7 @@ router.post(
 
 router.post(
   '/verify-otp',
+  otpLimiter,
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('code')
@@ -73,6 +79,7 @@ router.post(
 
 router.post(
   '/resend-otp',
+  otpLimiter,
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('purpose').isIn(otpPurposes).withMessage('Invalid verification purpose'),

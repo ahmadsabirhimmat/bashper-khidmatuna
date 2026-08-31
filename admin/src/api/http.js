@@ -33,6 +33,54 @@ export const resolveImageUrl = (imageUrl) => {
   return `${API_BASE_URL}${pathname}`;
 };
 const AUTH_EVENT = 'bk-auth-expired';
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
+let csrfToken = '';
+let csrfInFlight = null;
+
+const needsCsrf = (method, path) => {
+  if (SAFE_METHODS.has(String(method || 'GET').toUpperCase())) {
+    return false;
+  }
+  return path !== '/api/csrf-token' && path !== '/health';
+};
+
+const fetchCsrfToken = async () => {
+  if (csrfInFlight) {
+    return csrfInFlight;
+  }
+  csrfInFlight = (async () => {
+    const response = await fetch(buildUrl('/api/csrf-token'), {
+      method: 'GET',
+      headers: { Accept: 'application/json' },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data?.csrfToken) {
+      const error = new Error(data?.message || 'Unable to start a secure session.');
+      error.status = response.status;
+      throw error;
+    }
+    csrfToken = data.csrfToken;
+    return csrfToken;
+  })().finally(() => {
+    csrfInFlight = null;
+  });
+  return csrfInFlight;
+};
+
+const ensureCsrfToken = async (method, path) => {
+  if (!needsCsrf(method, path)) {
+    return '';
+  }
+  if (!csrfToken) {
+    await fetchCsrfToken();
+  }
+  return csrfToken;
+};
+
+const clearCsrfToken = () => {
+  csrfToken = '';
+};
 
 const buildUrl = (path) => {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
@@ -65,7 +113,7 @@ export const subscribeToAuthReset = (listener) => {
   return () => window.removeEventListener(AUTH_EVENT, listener);
 };
 
-export const apiRequest = async (path, { method = 'GET', headers = {}, body, query, signal } = {}) => {
+export const apiRequest = async (path, { method = 'GET', headers = {}, body, query, signal, _csrfRetry } = {}) => {
   const url = `${buildUrl(path)}${encodeQuery(query)}`;
   const token = getStoredToken();
 
@@ -80,6 +128,11 @@ export const apiRequest = async (path, { method = 'GET', headers = {}, body, que
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  const csrf = await ensureCsrfToken(method, path);
+  if (csrf) {
+    config.headers['X-CSRF-Token'] = csrf;
   }
 
   if (body instanceof FormData) {
@@ -106,6 +159,10 @@ export const apiRequest = async (path, { method = 'GET', headers = {}, body, que
   const payload = isJson ? await response.json() : await response.text();
 
   if (!response.ok) {
+    if (response.status === 403 && isJson && payload?.code === 'CSRF' && !_csrfRetry) {
+      clearCsrfToken();
+      return apiRequest(path, { method, headers, body, query, signal, _csrfRetry: true });
+    }
     if (response.status === 401) {
       broadcastAuthReset();
     }

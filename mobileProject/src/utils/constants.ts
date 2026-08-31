@@ -10,10 +10,7 @@ export const PROVIDER_APP_URL = "https://bashper-khidmatuna-provider.onrender.co
 
 export const DEVELOPER_CONTACT = {
   name: "Ahmad Sabir Himmat",
-  email: "bashperkhidmatuna@gmail.com",
-  whatsapp: "+93700784854",
-  whatsappDisplay: "+93 700 784 854",
-  whatsappUrl: "https://wa.me/93700784854",
+  portfolioUrl: "https://sabirhimmatportfolio.onrender.com",
 };
 
 export const LEGAL_EMAIL = "bashperkhidmatuna@gmail.com";
@@ -453,8 +450,8 @@ export const translations = {
   ),
   developerTitle: i18n("Contact the developer", "له جوړونکي سره اړیکه", "تماس با سازنده"),
   developerName: i18n("Ahmad Sabir Himmat", "احمد صابر همت", "احمد صابر همت"),
-  developerWhatsApp: i18n("WhatsApp", "واټساپ", "واتساپ"),
-  developerEmail: i18n("Email", "بریښنالیک", "ایمیل"),
+  developerPortfolio: i18n("Portfolio", "پورټفولیو", "نمونه کارها"),
+  developerPortfolioOpen: i18n("Open developer portfolio", "د جوړونکي پورټفولیو پرانیزئ", "باز کردن نمونه کارهای سازنده"),
   privacyTitle: i18n("Privacy policy", "د محرمیت تګلاره", "سیاست حریم خصوصی"),
   privacyLegal: i18n("Legal", "قانوني", "حقوقی"),
   privacyOpen: i18n("Read privacy policy", "د محرمیت تګلاره ولولئ", "خواندن سیاست حریم خصوصی"),

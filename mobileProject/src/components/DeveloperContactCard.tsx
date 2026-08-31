@@ -37,25 +37,16 @@ export const DeveloperContactPanel = ({ colors }: { colors: AppColors }) => {
       <Text style={[styles.body, { color: colors.textSecondary }]}>{t("developerName")}</Text>
       <Pressable
         style={[styles.row, { borderColor: colors.border }]}
-        onPress={() => openUrl(DEVELOPER_CONTACT.whatsappUrl)}
+        onPress={() => openUrl(DEVELOPER_CONTACT.portfolioUrl)}
       >
-        <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
+        <Ionicons name="globe-outline" size={20} color={colors.primary} />
         <View style={styles.copy}>
-          <Text style={[styles.rowTitle, { color: colors.text }]}>{t("developerWhatsApp")}</Text>
+          <Text style={[styles.rowTitle, { color: colors.primary }]}>{t("developerPortfolioOpen")}</Text>
           <Text style={[styles.rowHint, { color: colors.textSecondary }]}>
-            {DEVELOPER_CONTACT.whatsappDisplay}
+            {DEVELOPER_CONTACT.portfolioUrl.replace(/^https:\/\//, "")}
           </Text>
         </View>
-      </Pressable>
-      <Pressable
-        style={[styles.row, { borderColor: colors.border }]}
-        onPress={() => openUrl(`mailto:${DEVELOPER_CONTACT.email}`)}
-      >
-        <Ionicons name="mail-outline" size={20} color={colors.primary} />
-        <View style={styles.copy}>
-          <Text style={[styles.rowTitle, { color: colors.text }]}>{t("developerEmail")}</Text>
-          <Text style={[styles.rowHint, { color: colors.textSecondary }]}>{DEVELOPER_CONTACT.email}</Text>
-        </View>
+        <Ionicons name="open-outline" size={18} color={colors.primary} />
       </Pressable>
     </View>
   );

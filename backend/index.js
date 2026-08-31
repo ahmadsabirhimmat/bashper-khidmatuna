@@ -15,6 +15,8 @@ const directoryRoutes = require('./routes/directoryRoutes');
 const siteRoutes = require('./routes/siteRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const criticalContactRoutes = require('./routes/criticalContactRoutes');
+const { csrfProtection, getCsrfToken } = require('./middleware/csrf');
+const { apiLimiter, csrfTokenLimiter, writeLimiter } = require('./middleware/rateLimit');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const { serveProviderImage } = require('./controllers/mediaController');
 const { getMailConfig, getMailTransport, isOtpDevMode } = require('./utils/emailService');
@@ -128,10 +130,14 @@ app.use(
 	cors({
 		origin: isDev ? true : resolveCorsOrigin,
 		credentials: true,
+		allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'Accept'],
 	})
 );
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+app.use(apiLimiter);
+app.use(csrfProtection);
+app.use(writeLimiter);
 app.get('/uploads/:filename', serveProviderImage);
 app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 app.use(morgan(isDev ? 'dev' : 'combined'));
@@ -147,6 +153,8 @@ app.get('/health', (req, res) => {
 	});
 });
 
+app.get('/api/csrf-token', csrfTokenLimiter, getCsrfToken);
+
 app.use('/api/auth', authRoutes);
 app.use('/api/providers', providerRoutes);
 app.use('/api/directory', directoryRoutes);
@@ -159,7 +167,7 @@ app.get('/', (req, res) => {
 		name: 'Bashper Khidmatuna API',
 		version: '1.1.0',
 		endpoints: {
-			health: '/health',
+			csrf: '/api/csrf-token',
 			auth: '/api/auth',
 			directory: '/api/directory',
 			providers: '/api/providers',

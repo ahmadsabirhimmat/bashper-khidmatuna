@@ -3,9 +3,58 @@ import type { EmergencyContact, LocalizedCopy, ServiceCategory } from "@/src/uti
 
 interface ApiError {
   message?: string;
+  code?: string;
+  errors?: Array<{ msg?: string; message?: string }>;
 }
 
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
+let csrfToken = "";
+let csrfInFlight: Promise<string> | null = null;
+
 const resolveUrl = (path: string) => `${API_BASE_URL}${path}`;
+
+const isSafeMethod = (method?: string) =>
+  SAFE_METHODS.has(String(method || "GET").toUpperCase());
+
+const needsCsrf = (path: string, method?: string) => {
+  if (isSafeMethod(method) || path === "/api/csrf-token" || path === "/health") {
+    return false;
+  }
+  return true;
+};
+
+const fetchCsrfToken = async (): Promise<string> => {
+  if (csrfInFlight) {
+    return csrfInFlight;
+  }
+  csrfInFlight = apiRequest<{ csrfToken: string }>("/api/csrf-token")
+    .then((data) => {
+      if (!data?.csrfToken) {
+        throw new Error("Unable to start a secure session.");
+      }
+      csrfToken = data.csrfToken;
+      return csrfToken;
+    })
+    .finally(() => {
+      csrfInFlight = null;
+    });
+  return csrfInFlight;
+};
+
+const ensureCsrfToken = async (path: string, method?: string): Promise<string> => {
+  if (!needsCsrf(path, method)) {
+    return "";
+  }
+  if (!csrfToken) {
+    await fetchCsrfToken();
+  }
+  return csrfToken;
+};
+
+const clearCsrfToken = () => {
+  csrfToken = "";
+};
 
 const buildHeaders = (token?: string, hasBody?: boolean) => {
   const headers: Record<string, string> = {
@@ -20,9 +69,11 @@ const buildHeaders = (token?: string, hasBody?: boolean) => {
   return headers;
 };
 
+type ApiRequestOptions = RequestInit & { _csrfRetry?: boolean };
+
 export async function apiRequest<T>(
   path: string,
-  options: RequestInit = {},
+  options: ApiRequestOptions = {},
   token?: string
 ): Promise<T> {
   const url = resolveUrl(path);
@@ -30,15 +81,18 @@ export async function apiRequest<T>(
   const isAuthPath = path.startsWith("/api/auth/");
   const timeoutMs = isAuthPath ? 45000 : 60000;
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const { _csrfRetry, ...fetchOptions } = options;
+  const csrf = await ensureCsrfToken(path, fetchOptions.method);
 
   let response: Response;
   try {
     response = await fetch(url, {
-      ...options,
+      ...fetchOptions,
       signal: controller.signal,
       headers: {
-        ...buildHeaders(token, Boolean(options.body)),
-        ...(options.headers ?? {}),
+        ...buildHeaders(token, Boolean(fetchOptions.body)),
+        ...(csrf ? { "X-CSRF-Token": csrf } : {}),
+        ...(fetchOptions.headers ?? {}),
       },
     });
   } catch (error) {
@@ -51,11 +105,10 @@ export async function apiRequest<T>(
   }
 
   if (!response.ok) {
+    let payload: ApiError | null = null;
     let message = `Request failed with status ${response.status}`;
     try {
-      const payload = (await response.json()) as ApiError & {
-        errors?: Array<{ msg?: string; message?: string }>;
-      };
+      payload = (await response.json()) as ApiError;
       if (payload.message) {
         message = payload.message;
       } else if (Array.isArray(payload.errors) && payload.errors.length > 0) {
@@ -64,9 +117,15 @@ export async function apiRequest<T>(
           .filter(Boolean)
           .join(", ");
       }
-    } catch (error) {
+    } catch {
       // no-op: keep default message
     }
+
+    if (response.status === 403 && payload?.code === "CSRF" && !_csrfRetry) {
+      clearCsrfToken();
+      return apiRequest<T>(path, { ...fetchOptions, _csrfRetry: true }, token);
+    }
+
     const error = new Error(message || `Request failed with status ${response.status}`) as Error & {
       status?: number;
     };

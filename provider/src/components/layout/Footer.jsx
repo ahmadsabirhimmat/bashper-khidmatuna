@@ -81,7 +81,7 @@ export const Footer = () => {
                     <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70 sm:tracking-[0.3em]">
                         {translate("Support", "ملاتړ")}
                     </p>
-                    <p>{translate("Need help? Email or WhatsApp the developer.", "مرستې ته اړتیا لرئ؟ جوړونکي ته بریښنالیک یا واټساپ وکړئ.", "نیاز به کمک دارید؟ به سازنده ایمیل یا واتساپ بزنید.")}</p>
+                    <p>{translate("Need help? Visit the developer portfolio.", "مرستې ته اړتیا لرئ؟ د جوړونکي پورټفولیو وګورئ.", "نیاز به کمک دارید؟ نمونه کارهای سازنده را ببینید.")}</p>
                     <DeveloperContact translate={translate} variant="onBlue" />
                     {supportEmail && supportEmail.toLowerCase() !== "ahmadsabirhimmat@gmail.com" ? (
                         <a className="inline-block break-all text-base font-semibold text-white hover:underline sm:text-lg" href={`mailto:${supportEmail}`}>

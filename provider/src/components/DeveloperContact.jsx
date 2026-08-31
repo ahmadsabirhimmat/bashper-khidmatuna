@@ -1,8 +1,6 @@
 export const DEVELOPER_CONTACT = {
   name: "Ahmad Sabir Himmat",
-  email: "ahmadsabirhimmat@gmail.com",
-  whatsappDisplay: "+93 700 784 854",
-  whatsappUrl: "https://wa.me/93700784854",
+  portfolioUrl: "https://sabirhimmatportfolio.onrender.com",
 };
 
 export const DeveloperContact = ({ translate, variant = "light" }) => {
@@ -25,15 +23,14 @@ export const DeveloperContact = ({ translate, variant = "light" }) => {
       <p className={`mt-2 text-base font-semibold ${titleClass}`}>{DEVELOPER_CONTACT.name}</p>
       <div className="mt-3 space-y-2 text-sm">
         <p>
-          <span className={labelClass}>{translate("WhatsApp", "واټساپ", "واتساپ")}: </span>
-          <a className={`font-semibold ${linkClass}`} href={DEVELOPER_CONTACT.whatsappUrl} target="_blank" rel="noreferrer">
-            {DEVELOPER_CONTACT.whatsappDisplay}
-          </a>
-        </p>
-        <p>
-          <span className={labelClass}>{translate("Email", "بریښنالیک", "ایمیل")}: </span>
-          <a className={`break-all font-semibold ${linkClass}`} href={`mailto:${DEVELOPER_CONTACT.email}`}>
-            {DEVELOPER_CONTACT.email}
+          <span className={labelClass}>{translate("Portfolio", "پورټفولیو", "نمونه کارها")}: </span>
+          <a
+            className={`break-all font-semibold ${linkClass}`}
+            href={DEVELOPER_CONTACT.portfolioUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {DEVELOPER_CONTACT.portfolioUrl.replace(/^https:\/\//, "")}
           </a>
         </p>
       </div>

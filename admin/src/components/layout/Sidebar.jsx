@@ -158,11 +158,13 @@ const Sidebar = ({ onNavigate }) => {
         <div className="sidebar__developer">
           <p className="sidebar__footnote">{translate('Developer', 'جوړونکی', 'سازنده')}</p>
           <p className="sidebar__developer-name">{DEVELOPER_CONTACT.name}</p>
-          <a className="sidebar__developer-link" href={DEVELOPER_CONTACT.whatsappUrl} target="_blank" rel="noreferrer">
-            {translate('WhatsApp', 'واټساپ', 'واتساپ')} · {DEVELOPER_CONTACT.whatsappDisplay}
-          </a>
-          <a className="sidebar__developer-link" href={`mailto:${DEVELOPER_CONTACT.email}`}>
-            {DEVELOPER_CONTACT.email}
+          <a
+            className="sidebar__developer-link"
+            href={DEVELOPER_CONTACT.portfolioUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {translate("Portfolio", "پورټفولیو", "نمونه کارها")}
           </a>
         </div>
         <p className={`sidebar__footnote ${apiOnline === false ? 'sidebar__footnote--alert' : ''}`}>
