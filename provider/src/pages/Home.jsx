@@ -164,6 +164,13 @@ export const Home = () => {
                         {translate("Register", "راجستر شئ")}
                     </NavLink>
                 </div>
+                <p className="mx-auto mt-8 max-w-2xl text-sm leading-relaxed text-slate-500">
+                    {translate(
+                        "This portal is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
+                        "دا پورټل د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
+                        "این پورتال سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                    )}
+                </p>
             </section>
         );
     }
@@ -203,6 +210,19 @@ export const Home = () => {
                         {translate("Learn More", "نور معلومات")}
                     </NavLink>
                 </div>
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-relaxed text-amber-950">
+                <p className="font-semibold">
+                    {translate("Emergency disclaimer", "د بیړني خدمت خبرتیا", "سلب مسئولیت اضطراری")}
+                </p>
+                <p className="mt-2">
+                    {translate(
+                        "This portal is a Kandahar service directory. It is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
+                        "دا پورټل د کندهار د خدماتو لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
+                        "این پورتال راهنمای خدمات کندهار است. سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                    )}
+                </p>
             </div>
 
             <div className="mt-10 space-y-4 sm:mt-12">

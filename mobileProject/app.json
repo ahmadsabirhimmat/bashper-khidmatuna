@@ -15,7 +15,7 @@
       "backgroundColor": "#0B254A"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "af.bashper.khidmatuna",
       "buildNumber": "1",
       "infoPlist": {
@@ -33,7 +33,10 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "blockedPermissions": [
+        "android.permission.POST_NOTIFICATIONS"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -63,8 +66,7 @@
           "isAndroidBackgroundLocationEnabled": false
         }
       ],
-      "expo-font",
-      "expo-notifications"
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -72,7 +74,9 @@
     "extra": {
       "eas": {
         "projectId": "6bd1f059-45eb-4a95-811f-400dc8cbfe40"
-      }
+      },
+      "privacyUrl": "https://bashper-khidmatuna-provider.onrender.com/privacy",
+      "termsUrl": "https://bashper-khidmatuna-provider.onrender.com/terms"
     }
   }
 }

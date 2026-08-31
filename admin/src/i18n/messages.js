@@ -173,6 +173,15 @@ export const messages = {
     removePolicySection: 'Remove',
     savePolicy: 'Save privacy policy',
 
+    termsEyebrow: 'Legal content',
+    termsTitle: 'Terms of use',
+    termsHint: 'This text is shown in the mobile app, provider portal, and store listings. English is required; Pashto and Dari are optional.',
+    loadTermsError: 'Unable to load terms of use',
+    termsSaved: 'Terms of use updated. Changes are live in the apps.',
+    saveTermsError: 'Unable to save terms of use',
+    loadingTerms: 'Loading terms of use…',
+    saveTerms: 'Save terms of use',
+
     loginBadge: 'Bashper Khidmatuna • Admin',
     loginTitle: 'Orchestrate the emergency grid.',
     loginDescription:
@@ -381,6 +390,15 @@ export const messages = {
     removePolicySection: 'لرې کړئ',
     savePolicy: 'تګلاره خوندي کړئ',
 
+    termsEyebrow: 'قانوني منځپانګه',
+    termsTitle: 'د کارولو شرطونه',
+    termsHint: 'دا متن په موبایل اپ، د چمتو کوونکي پورټل او پلورنځي کې ښکاري. انګلیسي اړینه ده؛ پښتو او دري اختیاري دي.',
+    loadTermsError: 'د کارولو شرطونه ونه لوستل شول',
+    termsSaved: 'د کارولو شرطونه تازه شول. بدلونونه په اپونو کې ژوندي دي.',
+    saveTermsError: 'د کارولو شرطونه نه خوندي شول',
+    loadingTerms: 'د کارولو شرطونه لوستل کېږي…',
+    saveTerms: 'شرطونه خوندي کړئ',
+
     loginBadge: 'بشپر خدمتونه • اډمین',
     loginTitle: 'بیړنۍ شبکه تنظیم کړئ.',
     loginDescription:
@@ -588,6 +606,15 @@ export const messages = {
     addPolicySection: 'افزودن بخش',
     removePolicySection: 'حذف',
     savePolicy: 'ذخیره سیاست حریم خصوصی',
+
+    termsEyebrow: 'محتوای حقوقی',
+    termsTitle: 'شرایط استفاده',
+    termsHint: 'این متن در اپ موبایل، پورتال ارائه‌دهنده و فروشگاه نمایش داده می‌شود. انگلیسی الزامی است؛ پشتو و دری اختیاری هستند.',
+    loadTermsError: 'بارگذاری شرایط استفاده ممکن نشد',
+    termsSaved: 'شرایط استفاده به‌روز شد. تغییرات در اپ‌ها فعال است.',
+    saveTermsError: 'ذخیره شرایط استفاده ممکن نشد',
+    loadingTerms: 'در حال بارگذاری شرایط استفاده…',
+    saveTerms: 'ذخیره شرایط استفاده',
 
     loginBadge: 'بشپر خدمتونه • مدیر',
     loginTitle: 'شبکه اضطراری را هدایت کنید.',

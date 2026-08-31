@@ -36,6 +36,12 @@ const NAV_ITEMS = [
     label: ['Privacy policy', 'د محرمیت تګلاره', 'سیاست حریم خصوصی'],
     caption: ['Legal text shown in the apps', 'په اپونو کې قانوني متن', 'متن حقوقی در اپ‌ها'],
   },
+  {
+    path: '/terms',
+    glyph: '⚖',
+    label: ['Terms of use', 'د کارولو شرطونه', 'شرایط استفاده'],
+    caption: ['Store listing legal page', 'د پلورنځي قانوني پاڼه', 'صفحه حقوقی فروشگاه'],
+  },
 ];
 
 const LANGUAGES = [

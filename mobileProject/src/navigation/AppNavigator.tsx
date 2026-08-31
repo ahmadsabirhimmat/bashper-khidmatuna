@@ -41,6 +41,10 @@ const AppNavigator = () => {
         name="privacy"
         options={{ title: t("privacyTitle"), headerTitleAlign: "center" }}
       />
+      <Stack.Screen
+        name="terms"
+        options={{ title: t("termsTitle"), headerTitleAlign: "center" }}
+      />
     </Stack>
   );
 };

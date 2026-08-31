@@ -93,6 +93,11 @@ const HomeScreen = () => {
         </View>
       </View>
 
+      <View style={[styles.disclaimer, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.disclaimerTitle, { color: colors.text }]}>{t("emergencyDisclaimerTitle")}</Text>
+        <Text style={[styles.disclaimerBody, { color: colors.textSecondary }]}>{t("emergencyDisclaimerBody")}</Text>
+      </View>
+
       {user ? (
         <>
           <View style={styles.sectionHeader}>
@@ -202,6 +207,20 @@ const styles = StyleSheet.create({
   },
   secondaryCtaText: {
     fontWeight: "600",
+  },
+  disclaimer: {
+    marginTop: 16,
+    borderRadius: 18,
+    padding: 16,
+  },
+  disclaimerTitle: {
+    fontWeight: "800",
+    fontSize: 14,
+  },
+  disclaimerBody: {
+    marginTop: 6,
+    lineHeight: 20,
+    fontSize: 13,
   },
 });
 

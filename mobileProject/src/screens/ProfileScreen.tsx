@@ -404,6 +404,16 @@ const ProfileScreen = () => {
           </View>
           <Ionicons name="chevron-forward" size={18} color={colors.primary} />
         </Pressable>
+        <Pressable
+          style={[styles.linkRow, { borderTopColor: colors.border }]}
+          onPress={() => router.push("/terms")}
+        >
+          <View style={styles.linkStart}>
+            <Ionicons name="document-text-outline" size={20} color={colors.primary} />
+            <Text style={[styles.linkText, { color: colors.primary }]}>{t("termsOpen")}</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color={colors.primary} />
+        </Pressable>
       </View>
 
       <DeveloperContactCard showProviderLink colors={colors} />

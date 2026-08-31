@@ -10,6 +10,8 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "build:apk": "eas build --platform android --profile preview",
+    "build:aab": "eas build --platform android --profile production",
+    "build:ios": "eas build --platform ios --profile production",
     "postinstall": "node ./scripts/patch-css-interop-safe-area.js"
   },
   "dependencies": {
@@ -27,7 +29,6 @@
     "expo-image": "~3.0.10",
     "expo-linking": "~8.0.12",
     "expo-location": "~19.0.8",
-    "expo-notifications": "~0.32.17",
     "expo-router": "~6.0.24",
     "expo-splash-screen": "~31.0.11",
     "expo-status-bar": "~3.0.8",

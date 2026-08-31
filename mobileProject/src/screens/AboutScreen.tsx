@@ -106,6 +106,11 @@ const AboutScreen = () => {
 
       <DeveloperContactCard showProviderLink colors={colors} />
 
+      <View style={[styles.section, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>{t("emergencyDisclaimerTitle")}</Text>
+        <Text style={[styles.body, { color: colors.textSecondary }]}>{t("emergencyDisclaimerBody")}</Text>
+      </View>
+
       <Pressable
         style={[styles.backBtn, { borderColor: colors.border, backgroundColor: colors.surface }]}
         onPress={() => router.back()}

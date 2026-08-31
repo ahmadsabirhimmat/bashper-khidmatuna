@@ -11,6 +11,7 @@ const allFooterLinks = [
     { to: "/about", labels: { en: "About", ps: "زموږ په اړه", dr: "درباره" } },
     { to: "/contact", labels: { en: "Contact", ps: "اړیکه", dr: "تماس" } },
     { to: "/privacy", labels: { en: "Privacy", ps: "محرمیت", dr: "حریم خصوصی" } },
+    { to: "/terms", labels: { en: "Terms", ps: "شرطونه", dr: "شرایط" } },
     { to: "/profile", labels: { en: "Profile", ps: "پروفایل", dr: "پروفایل" }, auth: true },
     { to: "/login", labels: { en: "Login", ps: "ننوتل", dr: "ورود" }, guest: true },
     { to: "/signup", labels: { en: "Sign Up", ps: "نوم لیکنه", dr: "ثبت‌نام" }, guest: true },

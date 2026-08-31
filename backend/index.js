@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const connectDb = require('./config/db');
 const ensureAdminUser = require('./utils/ensureAdminUser');
 const { ensureSiteContact } = require('./controllers/siteContactController');
-const { ensurePolicy } = require('./controllers/policyController');
+const { ensurePolicy, ensureTerms } = require('./controllers/policyController');
 const { ensureCriticalContacts } = require('./utils/criticalContactsStore');
 const authRoutes = require('./routes/authRoutes');
 const providerRoutes = require('./routes/providerRoutes');
@@ -179,6 +179,7 @@ const startServer = async () => {
 		await ensureAdminUser();
 		await ensureSiteContact();
 		await ensurePolicy();
+		await ensureTerms();
 		await ensureCriticalContacts();
 		const host = process.env.HOST || (isDev ? undefined : '0.0.0.0');
 		const onListen = () => {

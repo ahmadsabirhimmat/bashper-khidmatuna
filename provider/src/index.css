@@ -254,6 +254,10 @@ html.dark .bg-amber-50 {
   background-color: #33270f;
 }
 
+html.dark .border-amber-200 {
+  border-color: #854d0e;
+}
+
 html.dark .bg-yellow-50 {
   background-color: #33270f;
 }
@@ -315,6 +319,7 @@ html.dark .text-emerald-700 {
 
 html.dark .text-amber-600,
 html.dark .text-amber-700,
+html.dark .text-amber-950,
 html.dark .text-yellow-600 {
   color: #fbbf24;
 }

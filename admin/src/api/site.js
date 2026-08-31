@@ -18,3 +18,12 @@ export const updatePolicy = (payload, options = {}) =>
     body: payload,
     ...options,
   });
+
+export const fetchTerms = (options = {}) => apiRequest('/api/policy/terms', options);
+
+export const updateTerms = (payload, options = {}) =>
+  apiRequest('/api/policy/terms', {
+    method: 'PUT',
+    body: payload,
+    ...options,
+  });

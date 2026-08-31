@@ -13,6 +13,7 @@ import { ViewContact } from "./pages/ViewContact";
 import { EditContact } from "./pages/EditContact";
 import { Profile } from "./pages/Profile";
 import { Privacy } from "./pages/Privacy";
+import { Terms } from "./pages/Terms";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -31,6 +32,7 @@ const App = () => {
         { path: "/forgot-password", element: <ForgotPassword /> },
         { path: "/profile", element: <Profile /> },
         { path: "/privacy", element: <Privacy /> },
+        { path: "/terms", element: <Terms /> },
         { path: "/viewcontact/:id", element: <ViewContact /> },
         { path: "/editcontact/:id", element: <EditContact /> },
         { path: "*", element: <NotFound /> },

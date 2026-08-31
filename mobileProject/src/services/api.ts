@@ -154,5 +154,7 @@ export interface PrivacyPolicy {
 
 export const fetchPolicy = () => apiRequest<PrivacyPolicy>("/api/policy");
 
+export const fetchTerms = () => apiRequest<PrivacyPolicy>("/api/policy/terms");
+
 export const fetchCriticalContacts = () =>
   apiRequest<EmergencyContact[]>("/api/directory/critical");

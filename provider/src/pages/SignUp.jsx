@@ -166,22 +166,26 @@ export const SignUp = () => {
                     </label>
 
                     <div className="mt-6 flex items-start gap-3 text-sm text-slate-600">
-                        <input type="checkbox" id="terms" className="mt-1 h-4 w-4 rounded border-slate-300" required />
-                        <label htmlFor="terms">
-                            {translate(
-                                "I accept the",
-                                "زه منم",
-                                "می‌پذیرم"
-                            )}{" "}
+                        <input type="checkbox" id="legal-consent" className="mt-1 h-4 w-4 rounded border-slate-300" required />
+                        <p>
+                            <label htmlFor="legal-consent">
+                                {translate("I accept the", "زه منم", "می‌پذیرم")}{" "}
+                            </label>
                             <NavLink to="/privacy" className="font-semibold text-blue-600 underline-offset-2 hover:underline">
                                 {translate("privacy policy", "د محرمیت تګلاره", "سیاست حریم خصوصی")}
                             </NavLink>{" "}
-                            {translate(
-                                "and confirm I am an authorized emergency services representative.",
-                                "او تاییدوم چې زه د بیړنیو خدمتونو واکمن استازی یم.",
-                                "و تأیید می‌کنم که نماینده مجاز خدمات اضطراری هستم."
-                            )}
-                        </label>
+                            {translate("and", "او", "و")}{" "}
+                            <NavLink to="/terms" className="font-semibold text-blue-600 underline-offset-2 hover:underline">
+                                {translate("terms of use", "د کارولو شرطونه", "شرایط استفاده")}
+                            </NavLink>
+                            <label htmlFor="legal-consent">
+                                {translate(
+                                    ", confirm I am 13 or older, and confirm I am an authorized emergency services representative.",
+                                    "، تاییدوم چې ۱۳ کلن یا زیات یم، او تاییدوم چې زه د بیړنیو خدمتونو واکمن استازی یم.",
+                                    "، تأیید می‌کنم که ۱۳ سال یا بیشتر دارم، و تأیید می‌کنم که نماینده مجاز خدمات اضطراری هستم."
+                                )}
+                            </label>
+                        </p>
                     </div>
 
                     <button

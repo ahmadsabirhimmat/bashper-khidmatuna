@@ -5,3 +5,6 @@ export const fetchSiteContact = (options = {}) =>
 
 export const fetchPolicy = (options = {}) =>
   apiRequest('/api/policy', options);
+
+export const fetchTerms = (options = {}) =>
+  apiRequest('/api/policy/terms', options);

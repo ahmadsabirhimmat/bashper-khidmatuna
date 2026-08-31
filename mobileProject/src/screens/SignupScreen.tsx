@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useAppContext } from "@/src/context/AppContext";
 import { isValidAfghanPhone } from "@/src/utils/helpers";
@@ -12,6 +12,7 @@ const SignupScreen = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [fullName, setFullName] = useState("");
+  const [acceptedLegal, setAcceptedLegal] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
@@ -29,6 +30,10 @@ const SignupScreen = () => {
     }
     if (password.length < 8) {
       Alert.alert(t("signup"), t("passwordPlaceholder"));
+      return;
+    }
+    if (!acceptedLegal) {
+      Alert.alert(t("signup"), t("signupConsentRequired"));
       return;
     }
     try {
@@ -85,15 +90,45 @@ const SignupScreen = () => {
         value={password}
         onChangeText={setPassword}
       />
+      <View style={styles.consentRow}>
+        <Pressable
+          onPress={() => setAcceptedLegal((value) => !value)}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: acceptedLegal }}
+          hitSlop={8}
+        >
+          <View
+            style={[
+              styles.checkbox,
+              { borderColor: colors.primary },
+              acceptedLegal ? { backgroundColor: colors.primary } : null,
+            ]}
+          />
+        </Pressable>
+        <Text style={[styles.consentText, { color: colors.textSecondary }]}>
+          {t("signupConsentPrefix")}
+          <Text
+            style={[styles.consentLink, { color: colors.primary }]}
+            onPress={() => router.push("/privacy")}
+          >
+            {t("privacyTitle")}
+          </Text>
+          {t("signupConsentAnd")}
+          <Text
+            style={[styles.consentLink, { color: colors.primary }]}
+            onPress={() => router.push("/terms")}
+          >
+            {t("termsTitle")}
+          </Text>
+          {t("signupConsentSuffix")}
+        </Text>
+      </View>
       <Pressable
         style={[styles.primaryBtn, { backgroundColor: colors.primary }]}
         onPress={handleSubmit}
         disabled={loading}
       >
         {loading ? <ActivityIndicator color="#FFFFFF" /> : <Text style={styles.primaryText}>{t("submit")}</Text>}
-      </Pressable>
-      <Pressable style={styles.linkBtn} onPress={() => router.push("/privacy")}>
-        <Text style={[styles.linkText, { color: colors.primary }]}>{t("privacyAccept")}</Text>
       </Pressable>
       <Pressable style={styles.linkBtn} onPress={() => router.push("/auth/login" as const)}>
         <Text style={[styles.linkText, { color: colors.primary }]}>{t("alreadyAccount")}</Text>
@@ -120,11 +155,31 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     fontSize: 16,
   },
+  consentRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    marginTop: 4,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 6,
+    borderWidth: 2,
+    marginTop: 2,
+  },
+  consentText: {
+    flex: 1,
+    lineHeight: 22,
+  },
+  consentLink: {
+    fontWeight: "700",
+  },
   primaryBtn: {
     padding: 14,
     borderRadius: 16,
     alignItems: "center",
-    marginTop: 12,
+    marginTop: 16,
   },
   primaryText: {
     color: "#FFFFFF",

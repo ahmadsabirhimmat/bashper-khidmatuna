@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useAppContext } from "@/src/context/AppContext";
-import { fetchPolicy, type PrivacyPolicy } from "@/src/services/api";
+import { fetchPolicy, fetchTerms, type PrivacyPolicy } from "@/src/services/api";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 import { localize } from "@/src/utils/helpers";
 import type { LocalizedCopy } from "@/src/utils/types";
@@ -23,9 +23,38 @@ const asCopy = (value?: Partial<LocalizedCopy>): LocalizedCopy | undefined => {
   };
 };
 
-const PrivacyScreen = () => {
+type LegalKind = "privacy" | "terms";
+
+const LEGAL_KEYS: Record<
+  LegalKind,
+  {
+    fetch: () => Promise<PrivacyPolicy>;
+    title: "privacyTitle" | "termsTitle";
+    loading: "privacyLoading" | "termsLoading";
+    error: "privacyError" | "termsError";
+    empty: "privacyEmpty" | "termsEmpty";
+  }
+> = {
+  privacy: {
+    fetch: fetchPolicy,
+    title: "privacyTitle",
+    loading: "privacyLoading",
+    error: "privacyError",
+    empty: "privacyEmpty",
+  },
+  terms: {
+    fetch: fetchTerms,
+    title: "termsTitle",
+    loading: "termsLoading",
+    error: "termsError",
+    empty: "termsEmpty",
+  },
+};
+
+const PrivacyScreen = ({ kind = "privacy" }: { kind?: LegalKind }) => {
   const router = useRouter();
   const { t, colors, language } = useAppContext();
+  const keys = LEGAL_KEYS[kind];
   const [policy, setPolicy] = useState<PrivacyPolicy | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -34,10 +63,10 @@ const PrivacyScreen = () => {
     setLoading(true);
     setError("");
     try {
-      const data = await fetchPolicy();
+      const data = await keys.fetch();
       setPolicy(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("privacyError"));
+      setError(err instanceof Error ? err.message : t(keys.error));
     } finally {
       setLoading(false);
     }
@@ -45,12 +74,14 @@ const PrivacyScreen = () => {
 
   useEffect(() => {
     void loadPolicy();
-  }, []);
+  }, [kind]);
 
-  const reloadPolicy = useCallback(() => loadPolicy(), []);
+  const reloadPolicy = useCallback(() => {
+    void loadPolicy();
+  }, [kind]);
   const { refreshing, onRefresh } = usePullToRefresh(reloadPolicy);
 
-  const title = localize(asCopy(policy?.title), language, t("privacyTitle"));
+  const title = localize(asCopy(policy?.title), language, t(keys.title));
   const subtitle = localize(asCopy(policy?.subtitle), language, "");
   const sections = Array.isArray(policy?.sections) ? policy.sections : [];
   const updatedAt = policy?.updatedAt
@@ -86,7 +117,7 @@ const PrivacyScreen = () => {
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
           <ActivityIndicator color={colors.primary} />
           <Text style={[styles.body, { color: colors.textSecondary, marginTop: 12 }]}>
-            {t("privacyLoading")}
+            {t(keys.loading)}
           </Text>
         </View>
       ) : null}
@@ -114,7 +145,7 @@ const PrivacyScreen = () => {
             })
           : (
               <View style={[styles.section, { backgroundColor: colors.surface }]}>
-                <Text style={[styles.body, { color: colors.textSecondary }]}>{t("privacyEmpty")}</Text>
+                <Text style={[styles.body, { color: colors.textSecondary }]}>{t(keys.empty)}</Text>
               </View>
             )
         : null}

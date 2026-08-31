@@ -123,6 +123,19 @@ export const About = () => {
                 ) : null}
             </div>
 
+            <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-relaxed text-amber-950">
+                <p className="font-semibold">
+                    {translate("Emergency disclaimer", "د بیړني خدمت خبرتیا", "سلب مسئولیت اضطراری")}
+                </p>
+                <p className="mt-2">
+                    {translate(
+                        "This directory is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
+                        "دا لارښود د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
+                        "این راهنما سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                    )}
+                </p>
+            </div>
+
             {loading ? (
                 <div className="mt-12 rounded-3xl border border-slate-200 bg-white px-6 py-16 text-center text-slate-500 shadow-lg">
                     {translate("Loading live stats...", "ژوندي احصایې لوستل کېږي...", "در حال بارگذاری آمار زنده...")}
