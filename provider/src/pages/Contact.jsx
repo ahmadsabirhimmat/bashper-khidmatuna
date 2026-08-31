@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "../context/LanguageContext";
-import { useLanguage } from "../context/LanguageContext";
 import { fetchSiteContact } from "../api/site";
 
 const pickLocalized = (value, language, fallback = "") => {
