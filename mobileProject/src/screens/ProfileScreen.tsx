@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { useAppContext } from "@/src/context/AppContext";
 import { fetchAboutOverview, type AboutOverview } from "@/src/services/api";
 import { LANGUAGE_CYCLE, LANGUAGE_LABELS, type LanguageCode } from "@/src/utils/types";
-import { DeveloperContactCard } from "@/src/components/DeveloperContactCard";
+import { DeveloperContactPanel, ProviderPortalPanel } from "@/src/components/DeveloperContactCard";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 
 const LANGUAGE_OPTIONS: Record<
@@ -51,6 +51,7 @@ const ProfileScreen = () => {
   const [about, setAbout] = useState<AboutOverview | null>(null);
   const [aboutLoading, setAboutLoading] = useState(true);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [contactTab, setContactTab] = useState<"provider" | "developer" | null>(null);
 
   const loadAbout = async () => {
     setAboutLoading(true);
@@ -416,7 +417,65 @@ const ProfileScreen = () => {
         </Pressable>
       </View>
 
-      <DeveloperContactCard showProviderLink colors={colors} />
+      <View style={[styles.section, { backgroundColor: colors.surface }]}>
+        <View style={[styles.contactTabs, { backgroundColor: colors.chipBg, borderColor: colors.border }]}>
+          <Pressable
+            style={[
+              styles.contactTab,
+              contactTab === "provider" ? { backgroundColor: colors.primary } : null,
+            ]}
+            onPress={() => setContactTab((current) => (current === "provider" ? null : "provider"))}
+          >
+            <Ionicons
+              name="briefcase-outline"
+              size={16}
+              color={contactTab === "provider" ? "#FFFFFF" : colors.primary}
+            />
+            <Text
+              style={[
+                styles.contactTabText,
+                { color: contactTab === "provider" ? "#FFFFFF" : colors.text },
+              ]}
+            >
+              {t("providerTab")}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.contactTab,
+              contactTab === "developer" ? { backgroundColor: colors.primary } : null,
+            ]}
+            onPress={() => setContactTab((current) => (current === "developer" ? null : "developer"))}
+          >
+            <Ionicons
+              name="person-circle-outline"
+              size={16}
+              color={contactTab === "developer" ? "#FFFFFF" : colors.primary}
+            />
+            <Text
+              style={[
+                styles.contactTabText,
+                { color: contactTab === "developer" ? "#FFFFFF" : colors.text },
+              ]}
+            >
+              {t("developerTab")}
+            </Text>
+          </Pressable>
+        </View>
+        {contactTab ? (
+          <View style={styles.contactTabBody}>
+            {contactTab === "provider" ? (
+              <ProviderPortalPanel colors={colors} />
+            ) : (
+              <DeveloperContactPanel colors={colors} />
+            )}
+          </View>
+        ) : (
+          <Text style={[styles.contactTabHint, { color: colors.textSecondary }]}>
+            {t("contactTabsHint")}
+          </Text>
+        )}
+      </View>
 
       {user ? (
         <View style={[styles.section, { backgroundColor: colors.surface }]}>
@@ -499,6 +558,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
     marginBottom: 8,
+  },
+  contactTabs: {
+    flexDirection: "row",
+    borderWidth: 1,
+    borderRadius: 16,
+    padding: 4,
+    gap: 4,
+  },
+  contactTab: {
+    flex: 1,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+  },
+  contactTabText: {
+    fontWeight: "800",
+    fontSize: 13,
+  },
+  contactTabHint: {
+    marginTop: 12,
+    fontSize: 13,
+    lineHeight: 20,
+  },
+  contactTabBody: {
+    marginTop: 14,
   },
   infoBlock: {
     gap: 14,

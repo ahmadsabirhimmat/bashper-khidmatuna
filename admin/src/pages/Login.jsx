@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import PasswordInput from '../components/common/PasswordInput.jsx';
 import AuthLanguageBar from '../components/auth/AuthLanguageBar.jsx';
-import { DEVELOPER_CONTACT } from '../data/developer.js';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -91,14 +90,6 @@ const LoginPage = () => {
             </button>
           </form>
           <p className="panel__footnote">{t('loginFootnote')}</p>
-          <div className="login-developer">
-            <p className="login-developer__title">{t('developerTitle')}</p>
-            <p className="login-developer__name">{DEVELOPER_CONTACT.name}</p>
-            <a href={DEVELOPER_CONTACT.whatsappUrl} target="_blank" rel="noreferrer">
-              {t('developerWhatsApp')} · {DEVELOPER_CONTACT.whatsappDisplay}
-            </a>
-            <a href={`mailto:${DEVELOPER_CONTACT.email}`}>{DEVELOPER_CONTACT.email}</a>
-          </div>
         </section>
       </div>
     </div>

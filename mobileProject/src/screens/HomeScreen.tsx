@@ -7,6 +7,7 @@ import SearchBar from "@/src/components/SearchBar";
 import { useAppContext } from "@/src/context/AppContext";
 import DirectoryAuthGate from "@/src/components/DirectoryAuthGate";
 import { openDialer } from "@/src/utils/helpers";
+import { sanitizeCriticalContacts } from "@/src/utils/constants";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 
 const HomeScreen = () => {
@@ -55,7 +56,7 @@ const HomeScreen = () => {
           {t("offlineReadySubtitle")}
         </Text>
         <View style={styles.criticalList}>
-          {criticalContacts.map((contact) => (
+          {sanitizeCriticalContacts(criticalContacts).map((contact) => (
             <Pressable
               key={contact.id}
               style={[styles.criticalRow, { backgroundColor: colors.overlay }]}

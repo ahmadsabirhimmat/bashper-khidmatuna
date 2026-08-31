@@ -5,7 +5,8 @@ const TERMS_KEY = 'terms-of-use';
 const MAX_SECTIONS = 20;
 const MAX_TEXT = 8000;
 
-const DEVELOPER_EMAIL = 'ahmadsabirhimmat@gmail.com';
+const LEGAL_EMAIL = 'bashperkhidmatuna@gmail.com';
+const OLD_LEGAL_EMAIL = 'ahmadsabirhimmat@gmail.com';
 
 const DEFAULT_POLICY = {
   key: POLICY_KEY,
@@ -63,9 +64,9 @@ const DEFAULT_POLICY = {
         dr: 'سلب مسئولیت',
       },
       body: {
-        en: 'Bashper Khidmatuna is a public directory of emergency and essential service contacts in Kandahar. It is not an official government emergency dispatch system and does not replace calling national emergency numbers. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire) as applicable, or the nearest verified local service.',
-        ps: 'بشپر خدمتونه د کندهار د بیړنیو او اړینو خدماتو عامه لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی او د ملي بیړنیو شمېرو ځای نه نیسي. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ، یا نږدې تایید شوی سیمه‌ییز خدمت.',
-        dr: 'بشپر خدمتونه یک راهنمای عمومی تماس‌های اضطراری و خدمات اساسی در کندهار است. سامانه رسمی اضطراری دولت نیست و جایگزین شماره‌های ملی اضطراری نمی‌شود. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید، یا نزدیک‌ترین خدمت تأییدشده محلی.',
+        en: 'Bashper Khidmatuna is a public directory of emergency and essential service contacts in Kandahar. It is not an official government emergency dispatch system and does not replace calling national emergency numbers. In a life-threatening emergency, call 119 (police) or 102 (ambulance), or the nearest verified local service.',
+        ps: 'بشپر خدمتونه د کندهار د بیړنیو او اړینو خدماتو عامه لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی او د ملي بیړنیو شمېرو ځای نه نیسي. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) ووهئ، یا نږدې تایید شوی سیمه‌ییز خدمت.',
+        dr: 'بشپر خدمتونه یک راهنمای عمومی تماس‌های اضطراری و خدمات اساسی در کندهار است. سامانه رسمی اضطراری دولت نیست و جایگزین شماره‌های ملی اضطراری نمی‌شود. در خطر جانی با ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) تماس بگیرید، یا نزدیک‌ترین خدمت تأییدشده محلی.',
       },
     },
     {
@@ -87,9 +88,9 @@ const DEFAULT_POLICY = {
         dr: 'تماس',
       },
       body: {
-        en: `Questions about this policy can be sent to ${DEVELOPER_EMAIL}.`,
-        ps: `د دې تګلارې په اړه پوښتنې ${DEVELOPER_EMAIL} ته واستوئ.`,
-        dr: `سؤالات مربوط به این سیاست را به ${DEVELOPER_EMAIL} بفرستید.`,
+        en: `Questions about this policy can be sent to ${LEGAL_EMAIL}.`,
+        ps: `د دې تګلارې په اړه پوښتنې ${LEGAL_EMAIL} ته واستوئ.`,
+        dr: `سؤالات مربوط به این سیاست را به ${LEGAL_EMAIL} بفرستید.`,
       },
     },
   ],
@@ -127,9 +128,9 @@ const DEFAULT_TERMS = {
         dr: 'سامانه رسمی اضطراری نیست',
       },
       body: {
-        en: 'This service is not an official government emergency system. Do not rely on it instead of calling national emergency numbers in a life-threatening situation: 119 (police), 112 (ambulance), or 102 (fire).',
-        ps: 'دا خدمت د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې پرې تکیه مه کوئ؛ ملي شمېرې ووهئ: ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه).',
-        dr: 'این خدمت سامانه رسمی اضطراری دولت نیست. در خطر جانی به‌جای آن به شماره‌های ملی زنگ بزنید: ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی).',
+        en: 'This service is not an official government emergency system. Do not rely on it instead of calling national emergency numbers in a life-threatening situation: 119 (police) or 102 (ambulance).',
+        ps: 'دا خدمت د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې پرې تکیه مه کوئ؛ ملي شمېرې ووهئ: ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس).',
+        dr: 'این خدمت سامانه رسمی اضطراری دولت نیست. در خطر جانی به‌جای آن به شماره‌های ملی زنگ بزنید: ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس).',
       },
     },
     {
@@ -187,9 +188,9 @@ const DEFAULT_TERMS = {
         dr: 'تماس',
       },
       body: {
-        en: `Questions about these terms can be sent to ${DEVELOPER_EMAIL}.`,
-        ps: `د دې شرطونو په اړه پوښتنې ${DEVELOPER_EMAIL} ته واستوئ.`,
-        dr: `سؤالات مربوط به این شرایط را به ${DEVELOPER_EMAIL} بفرستید.`,
+        en: `Questions about these terms can be sent to ${LEGAL_EMAIL}.`,
+        ps: `د دې شرطونو په اړه پوښتنې ${LEGAL_EMAIL} ته واستوئ.`,
+        dr: `سؤالات مربوط به این شرایط را به ${LEGAL_EMAIL} بفرستید.`,
       },
     },
   ],
@@ -214,14 +215,47 @@ const toPublicPolicy = (doc) => ({
   updatedAt: doc.updatedAt,
 });
 
+const rewriteLegalText = (value = '') =>
+  String(value)
+    .replaceAll(OLD_LEGAL_EMAIL, LEGAL_EMAIL)
+    .replaceAll('119 (police), 112 (ambulance), or 102 (fire) as applicable', '119 (police) or 102 (ambulance)')
+    .replaceAll('119 (police), 112 (ambulance), or 102 (fire)', '119 (police) or 102 (ambulance)')
+    .replaceAll('۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه)', '۱۱۹ (پولیس) یا ۱۰۲ (امبولانس)')
+    .replaceAll('۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی)', '۱۱۹ (پولیس) یا ۱۰۲ (امبولانس)');
+
+const rewriteLegalSections = (sections = []) => {
+  let dirty = false;
+  const next = sections.map((section) => {
+    const body = {
+      en: rewriteLegalText(section?.body?.en || ''),
+      ps: rewriteLegalText(section?.body?.ps || ''),
+      dr: rewriteLegalText(section?.body?.dr || ''),
+    };
+    if (
+      body.en !== (section?.body?.en || '') ||
+      body.ps !== (section?.body?.ps || '') ||
+      body.dr !== (section?.body?.dr || '')
+    ) {
+      dirty = true;
+      return { ...section, body };
+    }
+    return section;
+  });
+  return { sections: next, dirty };
+};
+
 const headingEn = (section) => String(section?.heading?.en || '').toLowerCase();
 
 const defaultSectionByHeading = (defaults, englishHeading) =>
   defaults.sections.find((section) => section.heading.en === englishHeading);
 
 const migratePrivacy = async (doc) => {
-  const sections = Array.isArray(doc.sections) ? [...doc.sections] : [];
+  let sections = Array.isArray(doc.sections) ? [...doc.sections] : [];
   let dirty = false;
+
+  const rewritten = rewriteLegalSections(sections);
+  sections = rewritten.sections;
+  dirty = rewritten.dirty;
 
   const contactIdx = sections.findIndex((section) => headingEn(section) === 'contact');
   if (contactIdx >= 0) {
@@ -260,6 +294,16 @@ const migratePrivacy = async (doc) => {
   return doc;
 };
 
+const migrateTerms = async (doc) => {
+  const rewritten = rewriteLegalSections(Array.isArray(doc.sections) ? doc.sections : []);
+  if (!rewritten.dirty) {
+    return doc;
+  }
+  doc.sections = rewritten.sections;
+  await doc.save();
+  return doc;
+};
+
 const ensureDocument = async (key, defaults, migrate) => {
   const existing = await Policy.findOne({ key });
   if (!existing) {
@@ -272,7 +316,7 @@ const ensureDocument = async (key, defaults, migrate) => {
 };
 
 const ensurePolicy = () => ensureDocument(POLICY_KEY, DEFAULT_POLICY, migratePrivacy);
-const ensureTerms = () => ensureDocument(TERMS_KEY, DEFAULT_TERMS);
+const ensureTerms = () => ensureDocument(TERMS_KEY, DEFAULT_TERMS, migrateTerms);
 
 const getDocument = (ensure, loadError) => async (req, res) => {
   try {

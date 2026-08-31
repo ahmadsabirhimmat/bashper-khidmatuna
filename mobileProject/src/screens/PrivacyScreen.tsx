@@ -12,14 +12,15 @@ import { useAppContext } from "@/src/context/AppContext";
 import { fetchPolicy, fetchTerms, type PrivacyPolicy } from "@/src/services/api";
 import { pullRefreshControl, usePullToRefresh } from "@/src/components/pullRefresh";
 import { localize } from "@/src/utils/helpers";
+import { rewriteLegalCopy } from "@/src/utils/constants";
 import type { LocalizedCopy } from "@/src/utils/types";
 
 const asCopy = (value?: Partial<LocalizedCopy>): LocalizedCopy | undefined => {
   if (!value) return undefined;
   return {
-    en: value.en || "",
-    ps: value.ps || "",
-    dr: value.dr || "",
+    en: rewriteLegalCopy(value.en || ""),
+    ps: rewriteLegalCopy(value.ps || ""),
+    dr: rewriteLegalCopy(value.dr || ""),
   };
 };
 

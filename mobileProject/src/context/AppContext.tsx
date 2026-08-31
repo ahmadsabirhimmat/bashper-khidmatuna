@@ -11,6 +11,7 @@ import {
   CATEGORY_DEFINITIONS,
   CRITICAL_CONTACTS,
   STORAGE_KEYS,
+  sanitizeCriticalContacts,
   translations,
   type TranslationKey,
 } from "@/src/utils/constants";
@@ -264,12 +265,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
     }
 
-    const savedCritical = safeJSONParse<EmergencyContact[]>(
-      dictionary[STORAGE_KEYS.criticalContacts] ?? null
+    const savedCritical = sanitizeCriticalContacts(
+      safeJSONParse<EmergencyContact[]>(dictionary[STORAGE_KEYS.criticalContacts] ?? null)
     );
-    if (savedCritical?.length) {
-      setCriticalLines(savedCritical);
-    }
+    setCriticalLines(savedCritical);
+    await AsyncStorage.setItem(STORAGE_KEYS.criticalContacts, JSON.stringify(savedCritical));
 
     const cachedContacts = safeJSONParse<DirectoryState>(dictionary[STORAGE_KEYS.contacts] ?? null);
     if (cachedContacts && savedToken) {
@@ -448,7 +448,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     try {
       const remote = await fetchCriticalContacts();
       if (remote?.length) {
-        const mapped = remote.map((item) => ({ ...item, isCritical: true as const }));
+        const mapped = sanitizeCriticalContacts(remote.map((item) => ({ ...item, isCritical: true as const })));
         setCriticalLines(mapped);
         await AsyncStorage.setItem(STORAGE_KEYS.criticalContacts, JSON.stringify(mapped));
       }
@@ -617,7 +617,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       try {
         const remote = await fetchCriticalContacts();
         if (mounted && remote?.length) {
-          const mapped = remote.map((item) => ({ ...item, isCritical: true as const }));
+          const mapped = sanitizeCriticalContacts(remote.map((item) => ({ ...item, isCritical: true as const })));
           setCriticalLines(mapped);
           await AsyncStorage.setItem(STORAGE_KEYS.criticalContacts, JSON.stringify(mapped));
         }
@@ -651,7 +651,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     await logout();
   }, [logout, token]);
 
-  const criticalContacts = criticalLines;
+  const criticalContacts = useMemo(
+    () => sanitizeCriticalContacts(criticalLines),
+    [criticalLines]
+  );
 
   const contextValue = useMemo<AppContextValue>(
     () => ({

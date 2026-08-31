@@ -166,9 +166,9 @@ export const Home = () => {
                 </div>
                 <p className="mx-auto mt-8 max-w-2xl text-sm leading-relaxed text-slate-500">
                     {translate(
-                        "This portal is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
-                        "دا پورټل د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
-                        "این پورتال سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                        "This portal is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police) or 102 (ambulance).",
+                        "دا پورټل د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) ووهئ.",
+                        "این پورتال سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) تماس بگیرید."
                     )}
                 </p>
             </section>
@@ -218,9 +218,9 @@ export const Home = () => {
                 </p>
                 <p className="mt-2">
                     {translate(
-                        "This portal is a Kandahar service directory. It is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
-                        "دا پورټل د کندهار د خدماتو لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
-                        "این پورتال راهنمای خدمات کندهار است. سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                        "This portal is a Kandahar service directory. It is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police) or 102 (ambulance).",
+                        "دا پورټل د کندهار د خدماتو لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) ووهئ.",
+                        "این پورتال راهنمای خدمات کندهار است. سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) تماس بگیرید."
                     )}
                 </p>
             </div>

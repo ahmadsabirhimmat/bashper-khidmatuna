@@ -10,11 +10,14 @@ export const PROVIDER_APP_URL = "https://bashper-khidmatuna-provider.onrender.co
 
 export const DEVELOPER_CONTACT = {
   name: "Ahmad Sabir Himmat",
-  email: "ahmadsabirhimmat@gmail.com",
+  email: "bashperkhidmatuna@gmail.com",
   whatsapp: "+93700784854",
   whatsappDisplay: "+93 700 784 854",
   whatsappUrl: "https://wa.me/93700784854",
 };
+
+export const LEGAL_EMAIL = "bashperkhidmatuna@gmail.com";
+export const OLD_LEGAL_EMAIL = "ahmadsabirhimmat@gmail.com";
 
 if (!API_BASE_URL && !__DEV__) {
   console.error(
@@ -32,7 +35,7 @@ export const STORAGE_KEYS = {
   apiBase: "bashper.api-base",
   districtFilter: "bashper.district-filter",
   theme: "bashper.theme",
-  criticalContacts: "bashper.critical-contacts",
+  criticalContacts: "bashper.critical-contacts-v2",
 };
 
 export const KANDAHAR_DISTRICTS = [
@@ -216,10 +219,10 @@ export const CRITICAL_CONTACTS: EmergencyContact[] = [
     isCritical: true,
   },
   {
-    id: "critical-ambulance-112",
+    id: "critical-ambulance-102",
     name: "Ambulance Emergency",
     organization: "Emergency Medical Services",
-    phoneNumber: "112",
+    phoneNumber: "102",
     category: "ambulance",
     location: "Kandahar Province",
     district: "Kandahar City",
@@ -228,20 +231,57 @@ export const CRITICAL_CONTACTS: EmergencyContact[] = [
     supportSms: false,
     isCritical: true,
   },
-  {
-    id: "critical-fire-102",
-    name: "Fire & Rescue Emergency",
-    organization: "Fire Department",
-    phoneNumber: "102",
-    category: "firefighters",
-    location: "Kandahar Province",
-    district: "Kandahar City",
-    description: "Fire and rescue emergency hotline. Available offline.",
-    availability: "24/7",
-    supportSms: false,
-    isCritical: true,
-  },
 ];
+
+export const sanitizeCriticalContacts = (list?: EmergencyContact[] | null): EmergencyContact[] => {
+  const source = Array.isArray(list) && list.length ? list : CRITICAL_CONTACTS;
+  const cleaned: EmergencyContact[] = [];
+
+  source.forEach((contact) => {
+    const haystack = `${contact.id} ${contact.name} ${contact.organization} ${contact.category}`.toLowerCase();
+    const isFire =
+      contact.category === "firefighters" ||
+      contact.id === "critical-fire-102" ||
+      haystack.includes("fire &") ||
+      haystack.includes("fire department") ||
+      (haystack.includes("fire") && contact.phoneNumber === "102");
+    if (isFire) {
+      return;
+    }
+
+    if (contact.phoneNumber === "112" || contact.id === "critical-ambulance-112") {
+      cleaned.push({
+        ...contact,
+        id: "critical-ambulance-102",
+        phoneNumber: "102",
+        category: "ambulance",
+      });
+      return;
+    }
+
+    cleaned.push(contact);
+  });
+
+  CRITICAL_CONTACTS.forEach((bundled) => {
+    const exists = cleaned.some((contact) => contact.category === bundled.category);
+    if (!exists) {
+      cleaned.push(bundled);
+    }
+  });
+
+  return cleaned;
+};
+
+export const rewriteLegalCopy = (value = "") =>
+  String(value)
+    .replaceAll(OLD_LEGAL_EMAIL, LEGAL_EMAIL)
+    .replaceAll(
+      "119 (police), 112 (ambulance), or 102 (fire) as applicable",
+      "119 (police) or 102 (ambulance)"
+    )
+    .replaceAll("119 (police), 112 (ambulance), or 102 (fire)", "119 (police) or 102 (ambulance)")
+    .replaceAll("۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه)", "۱۱۹ (پولیس) یا ۱۰۲ (امبولانس)")
+    .replaceAll("۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی)", "۱۱۹ (پولیس) یا ۱۰۲ (امبولانس)");
 
 export const translations = {
   appName: i18n("Bashper Khidmatuna", "بشپر خدمتونه", "بشپر خدمتونه"),
@@ -255,9 +295,9 @@ export const translations = {
   offlineBadge: i18n("Offline ready", "بې انټرنېټ لاسرسی", "آماده بدون اینترنت"),
   offlineReadyTitle: i18n("Emergency hotlines", "بیړني شمېرې", "خطوط اضطراری"),
   offlineReadySubtitle: i18n(
-    "Police, ambulance, and fire lines are available even without internet.",
-    "د پولیسو، امبولانس او اور وژنې شمیرې بې له انټرنېټه هم کار کوي.",
-    "خطوط پولیس، امبولانس و آتش‌نشانی حتی بدون اینترنت در دسترس هستند."
+    "Police and ambulance lines are available even without internet.",
+    "د پولیسو او امبولانس شمیرې بې له انټرنېټه هم کار کوي.",
+    "خطوط پولیس و امبولانس حتی بدون اینترنت در دسترس هستند."
   ),
   categoriesTitle: i18n("Service Categories", "د خدمتونو ټولګې", "دسته‌های خدمات"),
   viewDirectory: i18n("Open directory", "لارښود پرانیزئ", "باز کردن راهنما"),
@@ -404,6 +444,13 @@ export const translations = {
     "فهرست خدمات اضطراری خود را در اپ ارائه‌دهنده اضافه یا به‌روز کنید."
   ),
   providerPortalOpen: i18n("Open provider app", "د خدمت کوونکو اپ پرانیزئ", "باز کردن اپ ارائه‌دهنده"),
+  providerTab: i18n("Provider", "خدمت کوونکی", "ارائه‌دهنده"),
+  developerTab: i18n("Developer", "جوړونکی", "سازنده"),
+  contactTabsHint: i18n(
+    "Tap a tab to see details.",
+    "د جزئیاتو لیدو لپاره برخه وټاکئ.",
+    "برای دیدن جزئیات یک زبانه را بزنید."
+  ),
   developerTitle: i18n("Contact the developer", "له جوړونکي سره اړیکه", "تماس با سازنده"),
   developerName: i18n("Ahmad Sabir Himmat", "احمد صابر همت", "احمد صابر همت"),
   developerWhatsApp: i18n("WhatsApp", "واټساپ", "واتساپ"),
@@ -427,9 +474,9 @@ export const translations = {
   signupConsentSuffix: i18n(".", ".", "."),
   emergencyDisclaimerTitle: i18n("Emergency disclaimer", "د بیړني خدمت خبرتیا", "سلب مسئولیت اضطراری"),
   emergencyDisclaimerBody: i18n(
-    "This app is a Kandahar service directory. It is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
-    "دا اپ د کندهار د خدماتو لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
-    "این اپ راهنمای خدمات کندهار است. سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+    "This app is a Kandahar service directory. It is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police) or 102 (ambulance).",
+    "دا اپ د کندهار د خدماتو لارښود دی. دا د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) ووهئ.",
+    "این اپ راهنمای خدمات کندهار است. سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) تماس بگیرید."
   ),
   accountSection: i18n("Account", "حساب", "حساب"),
   preferencesSection: i18n("Preferences", "ترجیحات", "ترجیحات"),

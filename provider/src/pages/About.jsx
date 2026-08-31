@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchAboutOverview } from "../api/about";
-import { DeveloperContact } from "../components/DeveloperContact";
 import { SERVICE_TYPES, districtLabel } from "../data/serviceOptions";
 
 const formatNumber = (value) => {
@@ -129,9 +128,9 @@ export const About = () => {
                 </p>
                 <p className="mt-2">
                     {translate(
-                        "This directory is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police), 112 (ambulance), or 102 (fire).",
-                        "دا لارښود د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (اور وژنه) ووهئ.",
-                        "این راهنما سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس)، ۱۱۲ (امبولانس) یا ۱۰۲ (آتش‌نشانی) تماس بگیرید."
+                        "This directory is not an official government emergency dispatch system. In a life-threatening emergency, call 119 (police) or 102 (ambulance).",
+                        "دا لارښود د دولت رسمي بیړنی سیسټم نه دی. په ژوند ګواښونکې پېښه کې ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) ووهئ.",
+                        "این راهنما سامانه رسمی اضطراری دولت نیست. در خطر جانی با ۱۱۹ (پولیس) یا ۱۰۲ (امبولانس) تماس بگیرید."
                     )}
                 </p>
             </div>
@@ -299,10 +298,6 @@ export const About = () => {
                     </div>
                 </>
             ) : null}
-
-            <div className="mt-10">
-                <DeveloperContact translate={translate} variant="light" />
-            </div>
         </section>
     );
 };

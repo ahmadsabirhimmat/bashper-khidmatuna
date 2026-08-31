@@ -177,6 +177,15 @@ export const mergeCriticalIntoDirectory = (
   criticalList: EmergencyContact[] = CRITICAL_CONTACTS
 ): DirectoryState => {
   const next: DirectoryState = { ...directory };
+  Object.keys(next).forEach((category) => {
+    next[category] = (next[category] ?? [])
+      .filter((contact) => contact.id !== "critical-fire-102")
+      .map((contact) =>
+        contact.id === "critical-ambulance-112" || (contact.category === "ambulance" && contact.phoneNumber === "112")
+          ? { ...contact, id: "critical-ambulance-102", phoneNumber: "102" }
+          : contact
+      );
+  });
   criticalList.forEach((contact) => {
     const existing = next[contact.category] ?? [];
     next[contact.category] = uniqueContacts([{ ...contact }, ...existing]);
