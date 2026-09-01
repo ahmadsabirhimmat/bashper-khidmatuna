@@ -38,3 +38,6 @@ Thumbs.db
 # Netlify / Render local
 .netlify/
 .cursor/
+
+# Mobile app is kept locally and is not published on GitHub
+mobileProject/
