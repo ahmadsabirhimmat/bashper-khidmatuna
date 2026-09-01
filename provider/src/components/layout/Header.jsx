@@ -36,14 +36,14 @@ export const Header = () => {
         <div className="relative z-50 w-full min-w-0">
             <header className="w-full min-w-0 bg-blue-500 py-3 pt-[max(0.75rem,env(safe-area-inset-top))]">
                 <div className="mx-auto flex w-full min-w-0 max-w-6xl items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6">
-                    <div id="navbar-brand" className="min-w-0 flex-1 overflow-hidden">
-                        <NavLink to="/" className="block min-w-0" onClick={handleClose}>
-                            <p className="truncate text-base font-semibold tracking-wide text-white hover:text-black sm:text-xl">
+                    <div id="navbar-brand" className="min-w-0 flex-1 pe-2 sm:flex-none">
+                        <NavLink to="/" className="block" onClick={handleClose}>
+                            <p className="break-normal text-[0.95rem] font-semibold leading-tight text-white hover:text-black sm:whitespace-nowrap sm:text-xl sm:tracking-wide">
                                 {translate("Bashper Khidmatona", "بشپر خدمتونه")}
                             </p>
                         </NavLink>
                     </div>
-                    <div className="hidden min-w-0 items-center gap-4 xl:flex 2xl:gap-6">
+                    <div className="hidden items-center gap-3 xl:flex 2xl:gap-6">
                         <nav>
                             <ul className="flex gap-4 text-white 2xl:gap-5">
                                 {primaryLinks.map(({ path, labels }) => (

@@ -99,7 +99,7 @@ export const SignUp = () => {
                                 name="fullName"
                                 value={formData.fullName}
                                 onChange={handleChange}
-                                placeholder={translate("Amina Rahimi", "آمنه رحیمي")}
+                                placeholder={translate("Muhammad", "محمد", "محمد")}
                                 className="rounded-2xl border border-slate-200 px-4 py-3 text-base text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none"
                                 required
                             />
