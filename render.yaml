@@ -78,5 +78,11 @@ services:
         value: https://bashper-khidmatuna.onrender.com
     routes:
       - type: rewrite
+        source: /delete-account
+        destination: /delete-account.html
+      - type: rewrite
+        source: /delete-account/
+        destination: /delete-account.html
+      - type: rewrite
         source: /*
         destination: /index.html
