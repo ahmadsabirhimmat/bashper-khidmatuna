@@ -52,9 +52,9 @@ const DEFAULT_POLICY = {
         dr: 'نگهداری و حذف',
       },
       body: {
-        en: 'You can delete your mobile or provider account in the profile screen. Deleting an account removes the user record and any provider numbers owned by that account. Critical public emergency lines managed by admins stay in the directory.',
-        ps: 'تاسو کولی شئ خپل موبایل یا چمتو کوونکی حساب په پروفایل کې ړنګ کړئ. د حساب ړنګول کارن ریکارډ او هغه شمېرې له منځه وړي چې د هغه حساب پورې اړه لري. هغه عامه بیړنۍ کرښې چې اډمین یې اداره کوي په لارښود کې پاتې کېږي.',
-        dr: 'می‌توانید حساب موبایل یا ارائه‌دهنده را از صفحه پروفایل حذف کنید. حذف حساب، پرونده کاربر و شماره‌های متعلق به آن حساب را پاک می‌کند. خطوط اضطراری عمومی که مدیر اداره می‌کند در راهنما می‌مانند.',
+        en: 'You can delete your Bashper Khidmatuna account in Profile, or follow the steps on the public delete-account page. Deleting an account removes the user record, verification codes, and any provider numbers or photos owned by that account. Email deletion requests are completed within 30 days. Critical public emergency lines managed by admins stay in the directory.',
+        ps: 'تاسو کولی شئ خپل د بشپر خدمتونو حساب په پروفایل کې ړنګ کړئ، یا د عامه delete-account پاڼې ګامونه تعقیب کړئ. د حساب ړنګول کارن ریکارډ، د تایید کوډونه، او هغه شمېرې یا انځورونه له منځه وړي چې د هغه حساب پورې اړه لري. د بریښنالیک غوښتنې په ۳۰ ورځو کې بشپړېږي. هغه عامه بیړنۍ کرښې چې اډمین یې اداره کوي په لارښود کې پاتې کېږي.',
+        dr: 'می‌توانید حساب بشپر خدمتونه را از پروفایل حذف کنید، یا مراحل صفحه عمومی delete-account را دنبال کنید. حذف حساب، پرونده کاربر، کدهای تأیید، و شماره‌ها یا عکس‌های متعلق به آن حساب را پاک می‌کند. درخواست‌های ایمیلی ظرف ۳۰ روز انجام می‌شود. خطوط اضطراری عمومی که مدیر اداره می‌کند در راهنما می‌مانند.',
       },
     },
     {
@@ -264,6 +264,18 @@ const migratePrivacy = async (doc) => {
       const nextContact = defaultSectionByHeading(DEFAULT_POLICY, 'Contact');
       if (nextContact) {
         sections[contactIdx] = nextContact;
+        dirty = true;
+      }
+    }
+  }
+
+  const retentionIdx = sections.findIndex((section) => headingEn(section).includes('retention'));
+  if (retentionIdx >= 0) {
+    const bodyEn = String(sections[retentionIdx].body?.en || '');
+    if (!/delete-account/i.test(bodyEn)) {
+      const nextRetention = defaultSectionByHeading(DEFAULT_POLICY, 'Retention and deletion');
+      if (nextRetention) {
+        sections[retentionIdx] = nextRetention;
         dirty = true;
       }
     }
