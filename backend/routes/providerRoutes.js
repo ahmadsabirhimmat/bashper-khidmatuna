@@ -51,7 +51,7 @@ const handleUpload = (req, res, next) => {
     }
     if (error.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({
-        message: 'The image size must be under 2 MB.',
+        message: 'The image size must be under 5 MB.',
       });
     }
     return res.status(400).json({ message: error.message || 'Unable to upload image' });

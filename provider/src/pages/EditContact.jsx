@@ -338,9 +338,9 @@ export const EditContact = () => {
                         />
                         <span className="text-xs font-normal text-slate-500">
                             {translate(
-                                "JPG, JPEG, JFIF, PNG, WEBP, or GIF only — the image size must be under 2 MB.",
-                                "یوازې JPG، JPEG، JFIF، PNG، WEBP یا GIF — د انځور اندازه باید تر ۲ مېګابایټ لږه وي.",
-                                "فقط JPG، JPEG، JFIF، PNG، WEBP یا GIF — حجم تصویر باید کمتر از ۲ مگابایت باشد."
+                                "JPG, JPEG, JFIF, PNG, WEBP, or GIF only — the image size must be under 5 MB.",
+                                "یوازې JPG، JPEG، JFIF، PNG، WEBP یا GIF — د انځور اندازه باید تر ۵ مېګابایټ لږه وي.",
+                                "فقط JPG، JPEG، JFIF، PNG، WEBP یا GIF — حجم تصویر باید کمتر از ۵ مگابایت باشد."
                             )}
                         </span>
                         {imagePreview ? (

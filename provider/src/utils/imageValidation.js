@@ -1,4 +1,4 @@
-export const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
+export const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 export const ALLOWED_IMAGE_MIME_TYPES = [
   "image/jpeg",
@@ -37,9 +37,9 @@ export const validateProviderImage = (file, translate = (en) => en) => {
     return {
       ok: false,
       message: translate(
-        "The image size must be under 2 MB.",
-        "د انځور اندازه باید تر ۲ مېګابایټ لږه وي.",
-        "حجم تصویر باید کمتر از ۲ مگابایت باشد."
+        "The image size must be under 5 MB.",
+        "د انځور اندازه باید تر ۵ مېګابایټ لږه وي.",
+        "حجم تصویر باید کمتر از ۵ مگابایت باشد."
       ),
     };
   }

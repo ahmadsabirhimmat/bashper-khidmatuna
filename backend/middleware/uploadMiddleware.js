@@ -5,7 +5,7 @@ const multer = require('multer');
 const uploadsRoot = path.join(__dirname, '..', 'uploads');
 
 /** Keep uploads reasonable for limited disk space (files are stored in MongoDB). */
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2 MB
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024; // 5 MB
 
 const ALLOWED_IMAGE_TYPES = {
   'image/jpeg': ['.jpg', '.jpeg', '.jfif'],
