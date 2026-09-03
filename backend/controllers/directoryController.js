@@ -90,7 +90,7 @@ const toEmergencyContact = (providerDoc, req) => ({
   district: providerDoc.district || '',
   imageUrl: absoluteImageUrl(req, providerDoc.imageUrl || ''),
   availability: providerDoc.availability,
-  description: providerDoc.description || providerDoc.availability || '',
+  description: providerDoc.description || '',
   supportSms: providerDoc.capabilities?.includes('sms') ?? true,
   isCritical: false,
 });

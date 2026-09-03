@@ -146,22 +146,12 @@ a {
   min-width: 0;
 }
 
-header nav ul li {
-  font: bold 16px ubuntu, sans-serif;
-  text-transform: uppercase;
+.site-header nav ul li {
+  font-weight: 600;
 }
 
-header nav ul li .nav-link {
-  color: #ffffff;
-  transition: color 0.3s ease-in-out;
-}
-
-header nav ul li .nav-link:hover {
-  color: #000000;
-}
-
-header nav ul li .nav-link.active {
-  color: #000000;
+html.dark .site-header {
+  background: rgb(7 14 26 / 0.96);
 }
 
 .theme-toggle-btn {
@@ -218,15 +208,6 @@ html.dark {
 html.dark body {
   background: #0b1220;
   color: #e8eef8;
-}
-
-html.dark header nav ul li .nav-link:hover,
-html.dark header nav ul li .nav-link.active {
-  color: #dbeafe;
-}
-
-html.dark header .hover\:text-black:hover {
-  color: #dbeafe;
 }
 
 html.dark .bg-white:not(.text-blue-600):not(.text-blue-700):not(.text-red-600) {
