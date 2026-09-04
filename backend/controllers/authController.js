@@ -15,8 +15,9 @@ const { deleteUploadedFile } = require('../middleware/uploadMiddleware');
 const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
 
+/** Session tokens stay valid until the client logs out (no time-based expiry). */
 const generateToken = (userId, role) =>
-  jwt.sign({ id: userId, role }, process.env.JWT_SECRET, { expiresIn: '12h' });
+  jwt.sign({ id: userId, role }, process.env.JWT_SECRET);
 
 const generateResetToken = (userId, email) =>
   jwt.sign(
