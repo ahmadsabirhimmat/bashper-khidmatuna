@@ -3,7 +3,6 @@ const { body } = require('express-validator');
 const {
   registerUser,
   loginUser,
-  googleAuth,
   verifyOtp,
   resendOtp,
   forgotPassword,
@@ -43,16 +42,6 @@ router.post(
     body('password').notEmpty().withMessage('Password is required'),
   ],
   loginUser
-);
-
-router.post(
-  '/google',
-  authLimiter,
-  [
-    body('idToken').notEmpty().withMessage('Google credential is required'),
-    body('role').optional().isIn(['provider', 'beneficiary']).withMessage('Invalid role'),
-  ],
-  googleAuth
 );
 
 router.post(

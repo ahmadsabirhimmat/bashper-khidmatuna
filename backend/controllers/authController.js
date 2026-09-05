@@ -11,7 +11,6 @@ const {
   assertMailReady,
 } = require('../utils/emailService');
 const { deleteUploadedFile } = require('../middleware/uploadMiddleware');
-const { verifyGoogleIdToken } = require('../utils/googleAuth');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
@@ -181,12 +180,6 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
-    }
-
-    if (!user.password) {
-      return res.status(401).json({
-        message: 'This account uses Google sign-in. Continue with Google.',
-      });
     }
 
     const isMatch = await user.comparePassword(password);
@@ -438,87 +431,6 @@ const resendOtp = async (req, res) => {
   }
 };
 
-const googleAuth = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-
-  const idToken = String(req.body.idToken || '').trim();
-  const requestedRole = req.body.role === 'provider' ? 'provider' : 'beneficiary';
-
-  try {
-    const payload = await verifyGoogleIdToken(idToken);
-    const email = String(payload.email || '').trim().toLowerCase();
-    const googleId = String(payload.sub || '').trim();
-    const fullName = String(payload.name || '').trim() || email.split('@')[0] || 'Google user';
-
-    if (!email || !googleId) {
-      return res.status(400).json({ message: 'Google account is missing an email address.' });
-    }
-    if (payload.email_verified === false) {
-      return res.status(403).json({ message: 'Verify this Google email before signing in.' });
-    }
-
-    let user =
-      (await User.findOne({ googleId })) || (await User.findOne({ email }));
-
-    if (user) {
-      if (user.status === 'suspended') {
-        return res.status(403).json({ message: 'Account suspended. Contact support.' });
-      }
-      if (user.role === 'admin') {
-        return res.status(403).json({
-          message: 'Admin accounts must sign in with email and password.',
-        });
-      }
-      if (user.role !== requestedRole) {
-        return res.status(403).json({
-          message:
-            user.role === 'provider'
-              ? 'This Google account is a provider. Sign in on the provider portal.'
-              : 'This Google account is a directory user. Sign in on the mobile app.',
-        });
-      }
-      if (!user.googleId) {
-        user.googleId = googleId;
-      }
-      if (!user.fullName && fullName) {
-        user.fullName = fullName;
-      }
-      user.emailVerified = true;
-      if (user.status === 'pending') {
-        user.status = 'active';
-      }
-      user.lastLoginAt = new Date();
-      await user.save();
-    } else {
-      user = await User.create({
-        fullName,
-        email,
-        googleId,
-        role: requestedRole,
-        status: 'active',
-        emailVerified: true,
-        phoneNumber: '',
-        lastLoginAt: new Date(),
-      });
-    }
-
-    const token = generateToken(user._id, user.role);
-    return res.json({
-      token,
-      user: toUserResponse(user),
-    });
-  } catch (error) {
-    if (error.code === 'GOOGLE_NOT_CONFIGURED') {
-      return res.status(503).json({ message: error.message });
-    }
-    console.error('Google auth error:', error.message);
-    return res.status(401).json({ message: 'Google sign-in failed. Try again.' });
-  }
-};
-
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
@@ -558,7 +470,6 @@ const deleteAccount = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
-  googleAuth,
   verifyOtp,
   resendOtp,
   forgotPassword,
