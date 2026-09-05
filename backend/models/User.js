@@ -8,8 +8,9 @@ const userSchema = new mongoose.Schema(
     fullName: { type: String, required: true },
     organization: { type: String },
     email: { type: String, required: true, unique: true, lowercase: true },
-    phoneNumber: { type: String, required: true },
-    password: { type: String, required: true, minlength: 8 },
+    phoneNumber: { type: String, default: '' },
+    password: { type: String, minlength: 8 },
+    googleId: { type: String, unique: true, sparse: true, index: true },
     role: { type: String, enum: roles, default: 'beneficiary' },
     status: { type: String, enum: ['pending', 'active', 'suspended'], default: 'pending' },
     emailVerified: { type: Boolean, default: false },
@@ -19,7 +20,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre('save', async function hashPassword(next) {
-  if (!this.isModified('password')) {
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
   // 8 rounds is still strong and much faster than 10+ on local/dev hardware.
@@ -29,6 +30,9 @@ userSchema.pre('save', async function hashPassword(next) {
 });
 
 userSchema.methods.comparePassword = function comparePassword(candidate) {
+  if (!this.password) {
+    return Promise.resolve(false);
+  }
   return bcrypt.compare(candidate, this.password);
 };
 
