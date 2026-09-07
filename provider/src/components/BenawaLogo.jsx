@@ -1,6 +1,7 @@
 import benawaLogo from "../assets/benawa-logo.png";
 
 const SIZE = {
+  xs: "h-8",
   sm: "h-14",
   md: "h-20",
   lg: "h-24",
