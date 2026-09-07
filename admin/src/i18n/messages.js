@@ -182,6 +182,15 @@ export const messages = {
     loadingTerms: 'Loading terms of use…',
     saveTerms: 'Save terms of use',
 
+    benawaEyebrow: 'University content',
+    benawaTitle: 'Benawa University',
+    benawaHint: 'This short profile is shown on the mobile Profile and About screens, and on the provider About page. English is required; Pashto and Dari are optional.',
+    loadBenawaError: 'Unable to load Benawa University info',
+    benawaSaved: 'Benawa University info updated. Changes are live in the apps.',
+    saveBenawaError: 'Unable to save Benawa University info',
+    loadingBenawa: 'Loading Benawa University info…',
+    saveBenawa: 'Save Benawa info',
+
     loginBadge: 'Bashper Khidmatuna • Admin',
     loginTitle: 'Orchestrate the emergency grid.',
     loginDescription:
@@ -400,6 +409,15 @@ export const messages = {
     loadingTerms: 'د کارولو شرطونه لوستل کېږي…',
     saveTerms: 'شرطونه خوندي کړئ',
 
+    benawaEyebrow: 'د پوهنتون منځپانګه',
+    benawaTitle: 'بینوا پوهنتون',
+    benawaHint: 'دا لنډ پېژند په موبایل پروفایل او About پاڼه، او د چمتو کوونکي About پاڼه کې ښکاري. انګلیسي اړینه ده؛ پښتو او دري اختیاري دي.',
+    loadBenawaError: 'د بینوا پوهنتون معلومات ونه لوستل شول',
+    benawaSaved: 'د بینوا معلومات تازه شول. بدلونونه په اپونو کې ژوندي دي.',
+    saveBenawaError: 'د بینوا معلومات نه خوندي شول',
+    loadingBenawa: 'د بینوا معلومات لوستل کېږي…',
+    saveBenawa: 'د بینوا معلومات خوندي کړئ',
+
     loginBadge: 'بشپر خدمتونه • اډمین',
     loginTitle: 'بیړنۍ شبکه تنظیم کړئ.',
     loginDescription:
@@ -617,6 +635,15 @@ export const messages = {
     saveTermsError: 'ذخیره شرایط استفاده ممکن نشد',
     loadingTerms: 'در حال بارگذاری شرایط استفاده…',
     saveTerms: 'ذخیره شرایط استفاده',
+
+    benawaEyebrow: 'محتوای پوهنتون',
+    benawaTitle: 'پوهنتون بینوا',
+    benawaHint: 'این معرفی کوتاه در پروفایل و صفحه About موبایل و صفحه About پورتال ارائه‌دهنده نمایش داده می‌شود. انگلیسی الزامی است؛ پشتو و دری اختیاری هستند.',
+    loadBenawaError: 'بارگذاری اطلاعات پوهنتون بینوا ممکن نشد',
+    benawaSaved: 'اطلاعات بینوا به‌روز شد. تغییرات در اپ‌ها فعال است.',
+    saveBenawaError: 'ذخیره اطلاعات بینوا ممکن نشد',
+    loadingBenawa: 'در حال بارگذاری اطلاعات بینوا…',
+    saveBenawa: 'ذخیره اطلاعات بینوا',
 
     loginBadge: 'بشپر خدمتونه • مدیر',
     loginTitle: 'شبکه اضطراری را هدایت کنید.',

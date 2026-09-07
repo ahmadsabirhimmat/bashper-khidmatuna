@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { forgotPassword, resendOtp, resetPassword, verifyOtp } from '../api/auth.js';
 import PasswordInput from '../components/common/PasswordInput.jsx';
 import AuthLanguageBar from '../components/auth/AuthLanguageBar.jsx';
+import BenawaLogo from '../components/common/BenawaLogo.jsx';
 import { useLanguage } from '../context/LanguageContext.jsx';
+import { OTP_FIELD_PROPS, digitsOnlyOtp, useWebOtpAutofill } from '../utils/otp.js';
 
 const ForgotPasswordPage = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ const ForgotPasswordPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [info, setInfo] = useState(null);
+  const lastTried = useRef('');
 
   const handleSendCode = async (event) => {
     event.preventDefault();
@@ -29,6 +32,7 @@ const ForgotPasswordPage = () => {
       setInfo(response.message || t('resetSent'));
       setStep('otp');
       setCode('');
+      lastTried.current = '';
     } catch (err) {
       setError(err.message || t('unableSendReset'));
     } finally {
@@ -36,19 +40,25 @@ const ForgotPasswordPage = () => {
     }
   };
 
-  const handleVerifyCode = async (event) => {
-    event.preventDefault();
+  const handleVerifyCode = async (event, nextCode = code) => {
+    event?.preventDefault?.();
+    const digits = digitsOnlyOtp(nextCode);
     setError(null);
     setInfo(null);
-    if (!/^\d{6}$/.test(code.trim())) {
+    if (!/^\d{6}$/.test(digits)) {
       setError(t('enterSixDigit'));
       return;
     }
+    if (loading || lastTried.current === digits) {
+      return;
+    }
+    lastTried.current = digits;
+    setCode(digits);
     setLoading(true);
     try {
       const response = await verifyOtp({
         email,
-        code: code.trim(),
+        code: digits,
         purpose: 'reset',
       });
       if (!response?.resetToken) {
@@ -60,11 +70,21 @@ const ForgotPasswordPage = () => {
       setPassword('');
       setConfirmPassword('');
     } catch (err) {
+      lastTried.current = '';
       setError(err.message || t('unableVerify'));
     } finally {
       setLoading(false);
     }
   };
+
+  const applyCode = (value) => {
+    const digits = digitsOnlyOtp(value);
+    setCode(digits);
+    if (digits.length === 6) {
+      void handleVerifyCode(null, digits);
+    }
+  };
+  useWebOtpAutofill(applyCode, step === 'otp');
 
   const handleResend = async () => {
     setError(null);
@@ -74,6 +94,7 @@ const ForgotPasswordPage = () => {
       await resendOtp({ email, purpose: 'reset' });
       setInfo(t('resentReset'));
       setCode('');
+      lastTried.current = '';
     } catch (err) {
       setError(err.message || t('unableResend'));
     } finally {
@@ -116,6 +137,7 @@ const ForgotPasswordPage = () => {
       <div className="login-grid">
         <section className="login-panel">
           <AuthLanguageBar />
+          <BenawaLogo size="lg" className="login-brand-logo" />
           <div className="panel__badge">{t('forgotBadge')}</div>
           <h1>
             {step === 'email' && t('forgotTitle')}
@@ -153,13 +175,13 @@ const ForgotPasswordPage = () => {
               <label>
                 <span>{t('verificationCode')}</span>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
+                  {...OTP_FIELD_PROPS}
                   value={code}
-                  onChange={(event) => setCode(event.target.value.replace(/[^\d]/g, '').slice(0, 6))}
+                  onChange={(event) => applyCode(event.target.value)}
+                  onInput={(event) => applyCode(event.currentTarget.value)}
                   placeholder="123456"
                   required
+                  disabled={loading}
                 />
               </label>
               {error && <p className="form-error">{error}</p>}

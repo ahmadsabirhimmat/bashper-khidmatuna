@@ -2,7 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { fetchAboutOverview } from "../api/about";
+import { fetchBenawa } from "../api/site";
 import { SERVICE_TYPES, districtLabel } from "../data/serviceOptions";
+
+const pickLocalized = (value, language) => {
+    if (!value || typeof value !== "object") {
+        return typeof value === "string" ? value : "";
+    }
+    if (language === "ps") return value.ps || value.en || value.dr || "";
+    if (language === "dr") return value.dr || value.ps || value.en || "";
+    return value.en || value.ps || value.dr || "";
+};
 
 const formatNumber = (value) => {
     const num = Number(value) || 0;
@@ -21,6 +31,7 @@ const formatDate = (value) => {
 export const About = () => {
     const { translate, language } = useLanguage();
     const [overview, setOverview] = useState(null);
+    const [benawa, setBenawa] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -29,8 +40,17 @@ export const About = () => {
         setLoading(true);
         setError("");
 
-        fetchAboutOverview({ signal: controller.signal })
-            .then(setOverview)
+        Promise.all([
+            fetchAboutOverview({ signal: controller.signal }),
+            fetchBenawa({ signal: controller.signal }).catch((err) => {
+                if (err.name === "AbortError") throw err;
+                return null;
+            }),
+        ])
+            .then(([data, university]) => {
+                setOverview(data);
+                setBenawa(university);
+            })
             .catch((err) => {
                 if (err.name === "AbortError") return;
                 setError(
@@ -121,6 +141,44 @@ export const About = () => {
                     </p>
                 ) : null}
             </div>
+
+            {benawa ? (
+                <div className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-xl sm:p-8">
+                    <p className="text-xs uppercase tracking-[0.4em] text-blue-500">
+                        {translate("Benawa University", "بینوا پوهنتون", "پوهنتون بینوا")}
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold text-slate-900">
+                        {pickLocalized(benawa.title, language) ||
+                            translate("Benawa University", "بینوا پوهنتون", "پوهنتون بینوا")}
+                    </h2>
+                    {pickLocalized(benawa.subtitle, language) ? (
+                        <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                            {pickLocalized(benawa.subtitle, language)}
+                        </p>
+                    ) : null}
+                    <div className="mt-6 grid gap-5 md:grid-cols-3">
+                        {(benawa.sections || []).map((section, index) => {
+                            const heading = pickLocalized(section.heading, language);
+                            const body = pickLocalized(section.body, language);
+                            if (!heading && !body) return null;
+                            return (
+                                <div key={`${heading}-${index}`} className="rounded-2xl border border-slate-100 bg-slate-50 px-4 py-4">
+                                    {heading ? <p className="font-semibold text-slate-900">{heading}</p> : null}
+                                    {body ? <p className="mt-2 text-sm leading-relaxed text-slate-600">{body}</p> : null}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <a
+                        href="https://www.benawa.edu.af/"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-6 inline-flex text-sm font-semibold text-blue-600 hover:text-blue-700"
+                    >
+                        {translate("Visit benawa.edu.af", "benawa.edu.af پرانیزئ", "باز کردن benawa.edu.af")}
+                    </a>
+                </div>
+            ) : null}
 
             <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm leading-relaxed text-amber-950">
                 <p className="font-semibold">

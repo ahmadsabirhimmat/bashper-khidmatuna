@@ -9,6 +9,7 @@ import ProvidersPage from './pages/Providers.jsx';
 import SiteContactPage from './pages/SiteContact.jsx';
 import PolicyPage from './pages/Policy.jsx';
 import TermsPage from './pages/Terms.jsx';
+import BenawaPage from './pages/Benawa.jsx';
 import CriticalContactsPage from './pages/CriticalContacts.jsx';
 import NotFoundPage from './pages/NotFound.jsx';
 import './App.css';
@@ -32,6 +33,7 @@ const App = () => (
         <Route path="site-contact" element={<SiteContactPage />} />
         <Route path="policy" element={<PolicyPage />} />
         <Route path="terms" element={<TermsPage />} />
+        <Route path="benawa" element={<BenawaPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

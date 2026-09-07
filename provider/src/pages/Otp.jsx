@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { resendOtp, verifyOtp } from "../api/auth";
+import { OTP_FIELD_PROPS, digitsOnlyOtp, useWebOtpAutofill } from "../utils/otp";
 
 export const Otp = () => {
   const { translate } = useLanguage();
@@ -18,6 +19,7 @@ export const Otp = () => {
   const [resending, setResending] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
+  const lastTried = useRef("");
 
   // Only bounce away when there is no OTP challenge AND the user is not signed in.
   // Clearing pendingOtp after a successful verify must NOT send the user back to login.
@@ -33,11 +35,12 @@ export const Otp = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event, nextCode = code) => {
+    event?.preventDefault?.();
+    const digits = digitsOnlyOtp(nextCode);
     setError("");
     setFeedback("");
-    if (!/^\d{6}$/.test(code.trim())) {
+    if (!/^\d{6}$/.test(digits)) {
       setError(translate("Enter the 6-digit verification code", "۶ عددي کوډ دننه کړئ"));
       return;
     }
@@ -46,23 +49,37 @@ export const Otp = () => {
       navigate("/login", { replace: true });
       return;
     }
+    if (submitting || lastTried.current === digits) {
+      return;
+    }
 
+    lastTried.current = digits;
+    setCode(digits);
     setSubmitting(true);
     try {
       const response = await verifyOtp({
         email: pendingOtp.email,
-        code: code.trim(),
+        code: digits,
         purpose: pendingOtp.purpose || "login",
       });
       persistSession(response.token, response.user);
       setFeedback(translate("Verified. Redirecting...", "تایید شو. لېږد روان دی..."));
-      // Navigation is handled by the isAuthenticated effect above.
     } catch (err) {
+      lastTried.current = "";
       setError(err.message || translate("Unable to verify code", "کوډ تایید نه شو"));
     } finally {
       setSubmitting(false);
     }
   };
+
+  const applyCode = (value) => {
+    const digits = digitsOnlyOtp(value);
+    setCode(digits);
+    if (digits.length === 6) {
+      void handleSubmit(null, digits);
+    }
+  };
+  useWebOtpAutofill(applyCode);
 
   const handleResend = async () => {
     if (!pendingOtp?.email) {
@@ -78,6 +95,7 @@ export const Otp = () => {
       });
       setFeedback(translate("A new code was sent to your email", "نوی کوډ ستاسو بریښنالیک ته ولېږل شو"));
       setCode("");
+      lastTried.current = "";
     } catch (err) {
       setError(err.message || translate("Unable to resend code", "کوډ بیا نشو لیږلی"));
     } finally {
@@ -112,15 +130,14 @@ export const Otp = () => {
         <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
           {translate("Verification code", "د تایید کوډ")}
           <input
-            type="text"
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            maxLength={6}
+            {...OTP_FIELD_PROPS}
             value={code}
-            onChange={(event) => setCode(event.target.value.replace(/[^\d]/g, "").slice(0, 6))}
+            onChange={(event) => applyCode(event.target.value)}
+            onInput={(event) => applyCode(event.currentTarget.value)}
             placeholder="123456"
             className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center text-2xl font-semibold tracking-[0.4em] text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none"
             required
+            disabled={submitting}
           />
         </label>
 

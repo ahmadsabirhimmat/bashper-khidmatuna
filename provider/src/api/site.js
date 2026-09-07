@@ -8,3 +8,6 @@ export const fetchPolicy = (options = {}) =>
 
 export const fetchTerms = (options = {}) =>
   apiRequest('/api/policy/terms', options);
+
+export const fetchBenawa = (options = {}) =>
+  apiRequest('/api/policy/benawa', options);

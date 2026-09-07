@@ -2,6 +2,7 @@ const Policy = require('../models/Policy');
 
 const POLICY_KEY = 'privacy-policy';
 const TERMS_KEY = 'terms-of-use';
+const BENAWA_KEY = 'benawa-university';
 const MAX_SECTIONS = 20;
 const MAX_TEXT = 8000;
 
@@ -196,6 +197,58 @@ const DEFAULT_TERMS = {
   ],
 };
 
+const DEFAULT_BENAWA = {
+  key: BENAWA_KEY,
+  title: {
+    en: 'Benawa University',
+    ps: 'بینوا پوهنتون',
+    dr: 'پوهنتون بینوا',
+  },
+  subtitle: {
+    en: "Kandahar's technical university for computer science and engineering.",
+    ps: 'د کندهار تخنیکي پوهنتون — کمپیوټر ساینس او انجینري.',
+    dr: 'پوهنتون تخنیکی کندهار برای علوم کمپیوتر و انجینری.',
+  },
+  sections: [
+    {
+      heading: {
+        en: 'About',
+        ps: 'پېژندنه',
+        dr: 'معرفی',
+      },
+      body: {
+        en: 'Benawa University (بینوا پوهنتون) is a technical university in Aino Mina, Kandahar. It is known locally as a leading school for technical education.',
+        ps: 'بینوا پوهنتون په عینومینه، کندهار کې یو تخنیکي پوهنتون دی او په سیمه کې د تخنیکي تحصیل مخکښ بنسټ ګڼل کېږي.',
+        dr: 'پوهنتون بینوا یک پوهنتون تخنیکی در عینومینه، کندهار است و در منطقه به‌عنوان پیشگام تحصیلات تخنیکی شناخته می‌شود.',
+      },
+    },
+    {
+      heading: {
+        en: 'Study',
+        ps: 'زده‌کړه',
+        dr: 'تحصیل',
+      },
+      body: {
+        en: 'Two faculties: Computer Science and Engineering. Departments include general computer science, networking, civil engineering, and electrical engineering. Labs cover software, hardware, networks, electronics, and civil work, with a specialist library.',
+        ps: 'دوه پوهنځي: کمپیوټر ساینس او انجینري. ډیپارټمنټونه: عمومي کمپیوټر ساینس، شبکه، سیول او برق. لابراتوارونه: سافټویر، هارډویر، شبکه، الکترونیک او سیول، له تخصصي کتابتون سره.',
+        dr: 'دو پوهنځی: علوم کمپیوتر و انجینری. دیپارتمنت‌ها: علوم کمپیوتر عمومی، شبکه، سیول و برق. لابراتوارها: نرم‌افزار، سخت‌افزار، شبکه، الکترونیک و سیول، همراه کتابخانه تخصصی.',
+      },
+    },
+    {
+      heading: {
+        en: 'Contact',
+        ps: 'اړیکه',
+        dr: 'تماس',
+      },
+      body: {
+        en: 'Behind the Chamber of Commerce, Aino Mina, Kandahar. Phone 070 003 5222 / 070 003 6222. Email info@benawa.edu.af. Saturday–Thursday, 6:00 AM–7:00 PM. Website: benawa.edu.af',
+        ps: 'د اطاق تجارت شاته، عینومینه، کندهار. تلیفون ۰۷۰۰۰۳۵۲۲۲ / ۰۷۰۰۰۳۶۲۲۲. بریښنالیک info@benawa.edu.af. شنبه تر پنجشنبې، سهار ۶ تر ماښام ۷. ویب: benawa.edu.af',
+        dr: 'پشت اطاق تجارت، عینومینه، کندهار. تلفن ۰۷۰۰۰۳۵۲۲۲ / ۰۷۰۰۰۳۶۲۲۲. ایمیل info@benawa.edu.af. شنبه تا پنجشنبه، ۶ صبح تا ۷ شب. وب: benawa.edu.af',
+      },
+    },
+  ],
+};
+
 const clip = (value, fallback = '') => {
   const next = typeof value === 'string' ? value.trim() : fallback;
   return next.slice(0, MAX_TEXT);
@@ -329,6 +382,7 @@ const ensureDocument = async (key, defaults, migrate) => {
 
 const ensurePolicy = () => ensureDocument(POLICY_KEY, DEFAULT_POLICY, migratePrivacy);
 const ensureTerms = () => ensureDocument(TERMS_KEY, DEFAULT_TERMS, migrateTerms);
+const ensureBenawa = () => ensureDocument(BENAWA_KEY, DEFAULT_BENAWA);
 
 const getDocument = (ensure, loadError) => async (req, res) => {
   try {
@@ -403,6 +457,13 @@ const updateTerms = updateDocument(ensureTerms, {
   saveError: 'Unable to update terms of use',
 });
 
+const getBenawa = getDocument(ensureBenawa, 'Unable to load Benawa University info');
+const updateBenawa = updateDocument(ensureBenawa, {
+  titleRequired: 'English Benawa title is required.',
+  sectionRequired: 'Add at least one Benawa section.',
+  saveError: 'Unable to update Benawa University info',
+});
+
 module.exports = {
   getPolicy,
   updatePolicy,
@@ -412,4 +473,8 @@ module.exports = {
   updateTerms,
   ensureTerms,
   DEFAULT_TERMS,
+  getBenawa,
+  updateBenawa,
+  ensureBenawa,
+  DEFAULT_BENAWA,
 };

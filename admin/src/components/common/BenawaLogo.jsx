@@ -1,0 +1,17 @@
+import benawaLogo from "../../assets/benawa-logo.png";
+
+const SIZE = {
+  sm: "h-14",
+  md: "h-20",
+  lg: "h-24",
+};
+
+const BenawaLogo = ({ size = "md", className = "" }) => (
+  <img
+    src={benawaLogo}
+    alt="Benawa University"
+    className={`w-auto object-contain ${SIZE[size] || SIZE.md} ${className}`.trim()}
+  />
+);
+
+export default BenawaLogo;

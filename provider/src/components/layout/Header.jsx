@@ -4,6 +4,7 @@ import { LanguageSwitcher } from "../LanguageSwitcher";
 import { ThemeToggle } from "../ThemeToggle";
 import { useLanguage } from "../../context/LanguageContext";
 import { useAuth } from "../../context/AuthContext";
+import { BenawaLogo } from "../BenawaLogo";
 
 const primaryLinks = [
     { path: "/", labels: { en: "Home", ps: "کور", dr: "خانه" } },
@@ -27,12 +28,7 @@ const primaryBtn =
 
 const BrandMark = ({ translate }) => (
     <span className="flex min-w-0 items-center gap-2.5">
-        <span className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#1A63F4] text-white shadow-sm">
-            <span className="absolute -end-1.5 -top-1.5 h-4 w-4 rounded-full bg-white/25" />
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                <path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.47a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z" />
-            </svg>
-        </span>
+        <BenawaLogo size="sm" className="shrink-0" />
         <span className="min-w-0 leading-tight">
             <span className="block truncate text-[0.95rem] font-extrabold tracking-tight text-white sm:text-lg">
                 {translate("Bashper", "بشپر")}

@@ -4,6 +4,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { registerUser } from "../api/auth";
 import { PasswordInput } from "../components/PasswordInput";
+import { BenawaLogo } from "../components/BenawaLogo";
 
 const initialForm = {
     fullName: "",
@@ -75,6 +76,7 @@ export const SignUp = () => {
     return (
         <section className="page-shell flex max-w-5xl flex-col gap-10 lg:flex-row lg:items-center">
             <div className="min-w-0 flex-1 space-y-4 text-center lg:text-start">
+                <BenawaLogo size="lg" className="mx-auto lg:mx-0" />
                 <p className="text-xs uppercase tracking-[0.4em] text-blue-500">
                     {translate("Create Access", "لاس رسی جوړ کړئ")}
                 </p>

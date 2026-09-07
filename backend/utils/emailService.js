@@ -84,13 +84,58 @@ const purposeAction = (purpose) => {
   return 'sign in';
 };
 
+const DEFAULT_OTP_ORIGINS = [
+  'https://bashper-khidmatuna.onrender.com',
+  'https://bashper-khidmatuna-provider.onrender.com',
+  'https://bashper-khidmatuna-1.onrender.com',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  'http://localhost:4175',
+  'http://localhost:4176',
+];
+
+const otpAutofillHosts = () => {
+  const origins = [
+    ...String(process.env.CLIENT_URL || '')
+      .split(',')
+      .map((value) => value.trim()),
+    process.env.PUBLIC_API_URL,
+    process.env.RENDER_EXTERNAL_URL,
+    ...DEFAULT_OTP_ORIGINS,
+  ].filter(Boolean);
+
+  const hosts = [];
+  origins.forEach((origin) => {
+    try {
+      const host = new URL(origin).host;
+      if (host && !hosts.includes(host)) {
+        hosts.push(host);
+      }
+    } catch {
+      // Ignore malformed origins.
+    }
+  });
+  return hosts;
+};
+
+const originBoundOtpLines = (code) =>
+  otpAutofillHosts()
+    .map((host) => `@${host} #${code}`)
+    .join('\n');
+
 const buildMailContent = ({ code, purpose }) => {
   const action = purposeAction(purpose);
   const subject =
     purpose === 'reset'
       ? 'Your Bashper Khidmatuna password reset code'
       : 'Your Bashper Khidmatuna verification code';
-  const text = `Your verification code is ${code}. It expires in 10 minutes. Use this code to ${action} to Bashper Khidmatuna.`;
+  const autofillHint = originBoundOtpLines(code);
+  const text = [
+    `Your verification code is ${code}.`,
+    `It expires in 10 minutes. Use this code to ${action} to Bashper Khidmatuna.`,
+    '',
+    autofillHint,
+  ].join('\n');
   const html = `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #0B254A;">
         <h2>Bashper Khidmatuna</h2>
@@ -98,6 +143,9 @@ const buildMailContent = ({ code, purpose }) => {
         <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px;">${code}</p>
         <p>This code expires in <strong>10 minutes</strong>.</p>
         <p>If you did not request this, you can ignore this email.</p>
+        <div style="display:none;max-height:0;overflow:hidden;color:transparent;font-size:1px;line-height:1px;">
+          ${autofillHint}
+        </div>
       </div>
     `;
   return { subject, text, html };

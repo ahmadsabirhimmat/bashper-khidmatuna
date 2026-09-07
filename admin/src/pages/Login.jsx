@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import PasswordInput from '../components/common/PasswordInput.jsx';
 import AuthLanguageBar from '../components/auth/AuthLanguageBar.jsx';
+import BenawaLogo from '../components/common/BenawaLogo.jsx';
 import { DEVELOPER_CONTACT } from '../data/developer.js';
 
 const LoginPage = () => {
@@ -49,6 +50,7 @@ const LoginPage = () => {
       <div className="login-grid">
         <section className="login-panel">
           <AuthLanguageBar />
+          <BenawaLogo size="lg" className="login-brand-logo" />
           <div className="panel__badge">{t('loginBadge')}</div>
           <h1>{t('loginTitle')}</h1>
           <p className="panel__description">{t('loginDescription')}</p>

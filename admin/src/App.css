@@ -87,14 +87,11 @@ body,
 }
 
 .sidebar__logo {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, var(--accent), var(--violet));
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  color: var(--logo-ink);
+  width: auto;
+  height: 4.5rem;
+  background: transparent;
+  display: block;
+  padding: 0;
 }
 
 .sidebar__brand-copy {
@@ -457,6 +454,14 @@ body,
   font-size: 0.9rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.login-brand-logo {
+  display: block;
+  height: 5.5rem;
+  width: auto;
+  margin-inline: auto;
+  object-fit: contain;
 }
 
 .panel__footnote {

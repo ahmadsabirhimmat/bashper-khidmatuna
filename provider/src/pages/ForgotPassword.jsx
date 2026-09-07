@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { forgotPassword, resendOtp, resetPassword, verifyOtp } from "../api/auth";
 import { PasswordInput } from "../components/PasswordInput";
+import { OTP_FIELD_PROPS, digitsOnlyOtp, useWebOtpAutofill } from "../utils/otp";
 
 export const ForgotPassword = () => {
   const { translate } = useLanguage();
@@ -16,6 +17,7 @@ export const ForgotPassword = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
+  const lastTried = useRef("");
 
   const handleSendCode = async (event) => {
     event.preventDefault();
@@ -31,6 +33,7 @@ export const ForgotPassword = () => {
       );
       setStep("otp");
       setCode("");
+      lastTried.current = "";
     } catch (err) {
       setError(err.message || translate("Unable to send reset code", "کوډ نشو لیږلی"));
     } finally {
@@ -38,19 +41,25 @@ export const ForgotPassword = () => {
     }
   };
 
-  const handleVerifyCode = async (event) => {
-    event.preventDefault();
+  const handleVerifyCode = async (event, nextCode = code) => {
+    event?.preventDefault?.();
+    const digits = digitsOnlyOtp(nextCode);
     setError("");
     setInfo("");
-    if (!/^\d{6}$/.test(code.trim())) {
+    if (!/^\d{6}$/.test(digits)) {
       setError(translate("Enter the 6-digit verification code", "۶ عددي کوډ دننه کړئ"));
       return;
     }
+    if (loading || lastTried.current === digits) {
+      return;
+    }
+    lastTried.current = digits;
+    setCode(digits);
     setLoading(true);
     try {
       const response = await verifyOtp({
         email,
-        code: code.trim(),
+        code: digits,
         purpose: "reset",
       });
       if (!response?.resetToken) {
@@ -62,11 +71,21 @@ export const ForgotPassword = () => {
       setPassword("");
       setConfirmPassword("");
     } catch (err) {
+      lastTried.current = "";
       setError(err.message || translate("Unable to verify code", "کوډ تایید نه شو"));
     } finally {
       setLoading(false);
     }
   };
+
+  const applyCode = (value) => {
+    const digits = digitsOnlyOtp(value);
+    setCode(digits);
+    if (digits.length === 6) {
+      void handleVerifyCode(null, digits);
+    }
+  };
+  useWebOtpAutofill(applyCode, step === "otp");
 
   const handleResend = async () => {
     setError("");
@@ -76,6 +95,7 @@ export const ForgotPassword = () => {
       await resendOtp({ email, purpose: "reset" });
       setInfo(translate("A new code was sent to your email", "نوی کوډ ستاسو بریښنالیک ته ولېږل شو"));
       setCode("");
+      lastTried.current = "";
     } catch (err) {
       setError(err.message || translate("Unable to resend code", "کوډ بیا نشو لیږلی"));
     } finally {
@@ -174,13 +194,13 @@ export const ForgotPassword = () => {
             <label className="flex flex-col gap-2 text-sm font-medium text-slate-700">
               {translate("Verification code", "د تایید کوډ")}
               <input
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
+                {...OTP_FIELD_PROPS}
                 value={code}
-                onChange={(event) => setCode(event.target.value.replace(/[^\d]/g, "").slice(0, 6))}
+                onChange={(event) => applyCode(event.target.value)}
+                onInput={(event) => applyCode(event.currentTarget.value)}
                 className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-center text-2xl font-semibold tracking-[0.4em] text-slate-900 shadow-sm focus:border-blue-500 focus:outline-none"
                 required
+                disabled={loading}
               />
             </label>
             {error ? <p className="text-center text-sm font-medium text-red-600">{error}</p> : null}

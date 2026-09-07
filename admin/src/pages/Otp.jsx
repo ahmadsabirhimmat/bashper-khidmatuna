@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useLanguage } from '../context/LanguageContext.jsx';
 import AuthLanguageBar from '../components/auth/AuthLanguageBar.jsx';
+import BenawaLogo from '../components/common/BenawaLogo.jsx';
+import { OTP_FIELD_PROPS, digitsOnlyOtp, useWebOtpAutofill } from '../utils/otp.js';
 
 const OtpPage = () => {
   const navigate = useNavigate();
@@ -20,6 +22,7 @@ const OtpPage = () => {
   const [localError, setLocalError] = useState(null);
   const [info, setInfo] = useState('');
   const [resending, setResending] = useState(false);
+  const lastTried = useRef('');
 
   useEffect(() => {
     setInfo(t('otpSent'));
@@ -38,10 +41,11 @@ const OtpPage = () => {
     }
   }, [isAuthenticated, location.state?.from?.pathname, navigate]);
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (event, nextCode = code) => {
+    event?.preventDefault?.();
+    const digits = digitsOnlyOtp(nextCode);
     setLocalError(null);
-    if (!/^\d{6}$/.test(code.trim())) {
+    if (!/^\d{6}$/.test(digits)) {
       setLocalError(t('enterSixDigit'));
       return;
     }
@@ -50,17 +54,32 @@ const OtpPage = () => {
       navigate('/login', { replace: true });
       return;
     }
+    if (isAuthenticating || lastTried.current === digits) {
+      return;
+    }
 
+    lastTried.current = digits;
+    setCode(digits);
     try {
       await completeOtp({
         email: pendingOtp.email,
-        code: code.trim(),
+        code: digits,
         purpose: pendingOtp.purpose || 'login',
       });
     } catch (error) {
+      lastTried.current = '';
       setLocalError(error.message || t('unableVerify'));
     }
   };
+
+  const applyCode = (value) => {
+    const digits = digitsOnlyOtp(value);
+    setCode(digits);
+    if (digits.length === 6) {
+      void handleSubmit(null, digits);
+    }
+  };
+  useWebOtpAutofill(applyCode);
 
   const handleResend = async () => {
     setLocalError(null);
@@ -69,6 +88,7 @@ const OtpPage = () => {
       await resendPendingOtp();
       setInfo(t('otpResent'));
       setCode('');
+      lastTried.current = '';
     } catch (error) {
       setLocalError(error.message || t('unableResend'));
     } finally {
@@ -91,6 +111,7 @@ const OtpPage = () => {
       <div className="login-grid">
         <section className="login-panel">
           <AuthLanguageBar />
+          <BenawaLogo size="lg" className="login-brand-logo" />
           <div className="panel__badge">{t('otpBadge')}</div>
           <h1>{t('otpTitle')}</h1>
           <p className="panel__description">{t('otpDescription', { email: pendingOtp.email })}</p>
@@ -98,14 +119,13 @@ const OtpPage = () => {
             <label>
               <span>{t('verificationCode')}</span>
               <input
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
+                {...OTP_FIELD_PROPS}
                 value={code}
-                onChange={(event) => setCode(event.target.value.replace(/[^\d]/g, '').slice(0, 6))}
+                onChange={(event) => applyCode(event.target.value)}
+                onInput={(event) => applyCode(event.currentTarget.value)}
                 placeholder="123456"
                 required
+                disabled={isAuthenticating}
               />
             </label>
             {info && <p className="panel__footnote">{info}</p>}

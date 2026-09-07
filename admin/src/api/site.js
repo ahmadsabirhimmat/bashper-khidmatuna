@@ -27,3 +27,12 @@ export const updateTerms = (payload, options = {}) =>
     body: payload,
     ...options,
   });
+
+export const fetchBenawa = (options = {}) => apiRequest('/api/policy/benawa', options);
+
+export const updateBenawa = (payload, options = {}) =>
+  apiRequest('/api/policy/benawa', {
+    method: 'PUT',
+    body: payload,
+    ...options,
+  });

@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { pingHealth } from '../../api/health.js';
 import { useLanguage } from '../../context/LanguageContext.jsx';
 import ThemeToggle from '../common/ThemeToggle.jsx';
+import BenawaLogo from '../common/BenawaLogo.jsx';
 import { DEVELOPER_CONTACT, PROVIDER_APP_URL } from '../../data/developer.js';
 
 const NAV_ITEMS = [
@@ -41,6 +42,12 @@ const NAV_ITEMS = [
     glyph: '⚖',
     label: ['Terms of use', 'د کارولو شرطونه', 'شرایط استفاده'],
     caption: ['Store listing legal page', 'د پلورنځي قانوني پاڼه', 'صفحه حقوقی فروشگاه'],
+  },
+  {
+    path: '/benawa',
+    glyph: '🏛',
+    label: ['Benawa University', 'بینوا پوهنتون', 'پوهنتون بینوا'],
+    caption: ['About section in the apps', 'په اپونو کې د پوهنتون برخه', 'بخش پوهنتون در اپ‌ها'],
   },
 ];
 
@@ -107,7 +114,7 @@ const Sidebar = ({ onNavigate }) => {
     <aside className="sidebar">
       <div>
         <div className="sidebar__brand">
-          <div className="sidebar__logo">BK</div>
+          <BenawaLogo size="sm" className="sidebar__logo" />
           <div className="sidebar__brand-copy">
             <p className="sidebar__eyebrow">Bashper Khidmatuna</p>
             <p className="sidebar__title">{translate('Emergency Command', 'د بیړني قوماندې مرکز', 'مرکز فرمان اضطراری')}</p>
