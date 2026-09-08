@@ -10,6 +10,8 @@ import SiteContactPage from './pages/SiteContact.jsx';
 import PolicyPage from './pages/Policy.jsx';
 import TermsPage from './pages/Terms.jsx';
 import BenawaPage from './pages/Benawa.jsx';
+import UsersPage from './pages/Users.jsx';
+import CallsPage from './pages/Calls.jsx';
 import CriticalContactsPage from './pages/CriticalContacts.jsx';
 import NotFoundPage from './pages/NotFound.jsx';
 import './App.css';
@@ -29,6 +31,8 @@ const App = () => (
       >
         <Route index element={<OverviewPage />} />
         <Route path="providers" element={<ProvidersPage />} />
+        <Route path="users" element={<UsersPage />} />
+        <Route path="calls" element={<CallsPage />} />
         <Route path="critical-contacts" element={<CriticalContactsPage />} />
         <Route path="site-contact" element={<SiteContactPage />} />
         <Route path="policy" element={<PolicyPage />} />

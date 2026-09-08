@@ -9,6 +9,20 @@ import { useDesktopTable } from '../hooks/useDesktopTable.js';
 const serviceTypes = ['police', 'ambulance', 'firefighters', 'hospital', 'pharmacy', 'clinic', 'ngo', 'rescue'];
 const statusOptions = ['pending', 'approved', 'rejected'];
 
+const ReviewActions = ({ disabled, onApprove, onReject, onDelete, t }) => (
+  <div className="table-actions__group">
+    <button type="button" className="ghost" disabled={disabled} onClick={onApprove}>
+      {t('approve')}
+    </button>
+    <button type="button" className="ghost danger" disabled={disabled} onClick={onReject}>
+      {t('reject')}
+    </button>
+    <button type="button" className="ghost danger" disabled={disabled} onClick={onDelete}>
+      {t('delete')}
+    </button>
+  </div>
+);
+
 const ContactLines = ({ phone, altPhone, email, availability, description, t }) => (
   <div className="contact-stack">
     <a className="contact-stack__phone" href={`tel:${phone}`} dir="ltr">
@@ -205,30 +219,13 @@ const ProvidersPage = () => {
                     <StatusBadge value={provider.status} />
                   </td>
                   <td className="table-actions">
-                    <button
-                      type="button"
-                      className="ghost"
+                    <ReviewActions
                       disabled={actionId === provider._id}
-                      onClick={() => handleStatusChange(provider._id, 'approved')}
-                    >
-                      {t('approve')}
-                    </button>
-                    <button
-                      type="button"
-                      className="ghost danger"
-                      disabled={actionId === provider._id}
-                      onClick={() => handleStatusChange(provider._id, 'rejected')}
-                    >
-                      {t('reject')}
-                    </button>
-                    <button
-                      type="button"
-                      className="ghost danger"
-                      disabled={actionId === provider._id}
-                      onClick={() => handleDelete(provider._id)}
-                    >
-                      {t('delete')}
-                    </button>
+                      onApprove={() => handleStatusChange(provider._id, 'approved')}
+                      onReject={() => handleStatusChange(provider._id, 'rejected')}
+                      onDelete={() => handleDelete(provider._id)}
+                      t={t}
+                    />
                   </td>
                 </tr>
               ))}
@@ -272,30 +269,13 @@ const ProvidersPage = () => {
                   {provider.district ? <p className="table-subline">{tDistrict(provider.district)}</p> : null}
                 </div>
                 <div className="table-actions">
-                  <button
-                    type="button"
-                    className="ghost"
+                  <ReviewActions
                     disabled={actionId === provider._id}
-                    onClick={() => handleStatusChange(provider._id, 'approved')}
-                  >
-                    {t('approve')}
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost danger"
-                    disabled={actionId === provider._id}
-                    onClick={() => handleStatusChange(provider._id, 'rejected')}
-                  >
-                    {t('reject')}
-                  </button>
-                  <button
-                    type="button"
-                    className="ghost danger"
-                    disabled={actionId === provider._id}
-                    onClick={() => handleDelete(provider._id)}
-                  >
-                    {t('delete')}
-                  </button>
+                    onApprove={() => handleStatusChange(provider._id, 'approved')}
+                    onReject={() => handleStatusChange(provider._id, 'rejected')}
+                    onDelete={() => handleDelete(provider._id)}
+                    t={t}
+                  />
                 </div>
               </article>
             ))}

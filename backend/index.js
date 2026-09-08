@@ -15,6 +15,8 @@ const directoryRoutes = require('./routes/directoryRoutes');
 const siteRoutes = require('./routes/siteRoutes');
 const policyRoutes = require('./routes/policyRoutes');
 const criticalContactRoutes = require('./routes/criticalContactRoutes');
+const usersRoutes = require('./routes/usersRoutes');
+const callRoutes = require('./routes/callRoutes');
 const { csrfProtection, getCsrfToken } = require('./middleware/csrf');
 const { apiLimiter, csrfTokenLimiter, writeLimiter } = require('./middleware/rateLimit');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
@@ -161,6 +163,8 @@ app.use('/api/directory', directoryRoutes);
 app.use('/api/site', siteRoutes);
 app.use('/api/policy', policyRoutes);
 app.use('/api/critical-contacts', criticalContactRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/calls', callRoutes);
 
 app.get('/', (req, res) => {
 	res.json({
@@ -174,6 +178,8 @@ app.get('/', (req, res) => {
 			site: '/api/site',
 			policy: '/api/policy',
 			criticalContacts: '/api/critical-contacts',
+			users: '/api/users',
+			calls: '/api/calls',
 		},
 	});
 });

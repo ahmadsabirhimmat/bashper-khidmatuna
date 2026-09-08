@@ -20,6 +20,18 @@ const NAV_ITEMS = [
     caption: ['Approvals & verifications', 'تایید او بیاکتنه', 'تأیید و بررسی'],
   },
   {
+    path: '/users',
+    glyph: '👤',
+    label: ['App users', 'د اپ کاروونکي', 'کاربران اپ'],
+    caption: ['Registered mobile accounts', 'ثبت شوي موبایل حسابونه', 'حساب‌های ثبت‌شده موبایل'],
+  },
+  {
+    path: '/calls',
+    glyph: '📞',
+    label: ['Call log', 'د زنګونو ثبت', 'ثبت تماس‌ها'],
+    caption: ['Who called which service', 'کوم کاروونکي کوم خدمت ته زنګ وهلی', 'چه کسی به کدام خدمت زنگ زده'],
+  },
+  {
     path: '/critical-contacts',
     glyph: '☎',
     label: ['Critical lines', 'بیړني کرښې', 'خطوط حیاتی'],

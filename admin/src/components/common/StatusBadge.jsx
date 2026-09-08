@@ -2,8 +2,10 @@ import { useLanguage } from '../../context/LanguageContext.jsx';
 
 const palette = {
   approved: 'badge--positive',
+  active: 'badge--positive',
   pending: 'badge--amber',
   rejected: 'badge--danger',
+  suspended: 'badge--danger',
   open: 'badge--info',
   assigned: 'badge--violet',
   resolved: 'badge--positive',

@@ -30,4 +30,23 @@ const authorizeRoles = (...roles) => (req, res, next) => {
   next();
 };
 
-module.exports = { authenticate, authorizeRoles };
+const optionalAuthenticate = async (req, res, next) => {
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(payload.id).select('-password');
+    if (user) {
+      req.user = user;
+    }
+  } catch {
+    // Guest and expired sessions can still open the dialer; skip attaching a user.
+  }
+  return next();
+};
+
+module.exports = { authenticate, authorizeRoles, optionalAuthenticate };
