@@ -57,7 +57,7 @@ export const Footer = () => {
             <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr]">
                 <div className="space-y-4 text-center sm:text-start">
                     <div className="inline-flex items-center gap-3">
-                        <BenawaLogo size="xs" className="shrink-0" />
+                        <BenawaLogo size="2xs" className="shrink-0" />
                         <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
                             {translate("Bashper Khidmatona", "بشپر خدمتونه")}
                         </p>
