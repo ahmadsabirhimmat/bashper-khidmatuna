@@ -40,6 +40,12 @@ canvas {
   height: auto;
 }
 
+img.benawa-logo {
+  width: auto;
+  height: auto;
+  max-width: none;
+}
+
 input:not([type="checkbox"]):not([type="radio"]),
 select,
 textarea {

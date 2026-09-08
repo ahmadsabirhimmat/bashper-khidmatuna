@@ -1,17 +1,21 @@
 import benawaLogo from "../assets/benawa-logo.png";
 
-const SIZE = {
-  "2xs": "h-5 max-w-5",
-  xs: "h-6 max-w-6",
-  sm: "h-14",
-  md: "h-20",
-  lg: "h-24",
+const SIZE_PX = {
+  "2xs": 16,
+  xs: 20,
+  sm: 56,
+  md: 80,
+  lg: 96,
 };
 
-export const BenawaLogo = ({ size = "md", className = "" }) => (
-  <img
-    src={benawaLogo}
-    alt="Benawa University"
-    className={`w-auto object-contain ${SIZE[size] || SIZE.md} ${className}`.trim()}
-  />
-);
+export const BenawaLogo = ({ size = "md", className = "" }) => {
+  const px = SIZE_PX[size] || SIZE_PX.md;
+  return (
+    <img
+      src={benawaLogo}
+      alt="Benawa University"
+      className={`benawa-logo object-contain ${className}`.trim()}
+      style={{ height: px, width: "auto", maxHeight: px, maxWidth: px }}
+    />
+  );
+};
