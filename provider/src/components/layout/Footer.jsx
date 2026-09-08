@@ -4,6 +4,7 @@ import { fetchSiteContact } from "../../api/site";
 import { useAuth } from "../../context/AuthContext";
 import { useLanguage } from "../../context/LanguageContext";
 import { DeveloperContact } from "../DeveloperContact";
+import { BenawaLogo } from "../BenawaLogo";
 
 const allFooterLinks = [
     { to: "/", labels: { en: "Home", ps: "کور", dr: "خانه" } },
@@ -56,11 +57,7 @@ export const Footer = () => {
             <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.35fr_1fr_1fr]">
                 <div className="space-y-4 text-center sm:text-start">
                     <div className="inline-flex items-center gap-3">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1A63F4] text-white">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                                <path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.24 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.47a1 1 0 011 1 11.4 11.4 0 00.57 3.6 1 1 0 01-.25 1z" />
-                            </svg>
-                        </span>
+                        <BenawaLogo size="xs" className="shrink-0" />
                         <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
                             {translate("Bashper Khidmatona", "بشپر خدمتونه")}
                         </p>

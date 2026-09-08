@@ -831,6 +831,33 @@ textarea:focus {
   white-space: normal;
 }
 
+.contact-stack__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  margin: 0.2rem 0 0;
+  max-width: 100%;
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  direction: inherit;
+}
+
+.contact-stack__meta--notes {
+  max-height: 6.4rem;
+  overflow: auto;
+}
+
+.contact-stack__label {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .data-card__field {
   display: flex;
   flex-direction: column;

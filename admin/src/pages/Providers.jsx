@@ -9,7 +9,7 @@ import { useDesktopTable } from '../hooks/useDesktopTable.js';
 const serviceTypes = ['police', 'ambulance', 'firefighters', 'hospital', 'pharmacy', 'clinic', 'ngo', 'rescue'];
 const statusOptions = ['pending', 'approved', 'rejected'];
 
-const ContactLines = ({ phone, altPhone, email }) => (
+const ContactLines = ({ phone, altPhone, email, availability, description, t }) => (
   <div className="contact-stack">
     <a className="contact-stack__phone" href={`tel:${phone}`} dir="ltr">
       {phone}
@@ -22,6 +22,14 @@ const ContactLines = ({ phone, altPhone, email }) => (
     <span className="contact-stack__email" dir="ltr">
       {email || '—'}
     </span>
+    <p className="contact-stack__meta">
+      <span className="contact-stack__label">{t('fieldAvailabilityWindow')}</span>
+      <span dir="auto">{availability?.trim() || '—'}</span>
+    </p>
+    <p className="contact-stack__meta contact-stack__meta--notes">
+      <span className="contact-stack__label">{t('fieldServiceNotes')}</span>
+      <span dir="auto">{description?.trim() || '—'}</span>
+    </p>
   </div>
 );
 
@@ -188,6 +196,9 @@ const ProvidersPage = () => {
                       phone={provider.phoneNumber}
                       altPhone={provider.altPhoneNumber}
                       email={provider.email}
+                      availability={provider.availability}
+                      description={provider.description}
+                      t={t}
                     />
                   </td>
                   <td>
@@ -250,6 +261,9 @@ const ProvidersPage = () => {
                     phone={provider.phoneNumber}
                     altPhone={provider.altPhoneNumber}
                     email={provider.email}
+                    availability={provider.availability}
+                    description={provider.description}
+                    t={t}
                   />
                 </div>
                 <div className="data-card__field">
