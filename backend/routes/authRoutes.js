@@ -8,6 +8,7 @@ const {
   forgotPassword,
   resetPassword,
   getCurrentUser,
+  updateProfile,
   deleteAccount,
 } = require('../controllers/authController');
 const { authenticate } = require('../middleware/authMiddleware');
@@ -88,6 +89,36 @@ router.post(
 );
 
 router.get('/me', authenticate, getCurrentUser);
+
+router.patch(
+  '/me',
+  authenticate,
+  [
+    body('fullName').trim().notEmpty().withMessage('Full name is required'),
+    body('phoneNumber')
+      .trim()
+      .notEmpty()
+      .withMessage('Phone number is required')
+      .matches(/^(\+93|0)?[\d\s-]{8,15}$/)
+      .withMessage('Enter a valid Afghanistan phone number'),
+  ],
+  updateProfile
+);
+
+router.put(
+  '/me',
+  authenticate,
+  [
+    body('fullName').trim().notEmpty().withMessage('Full name is required'),
+    body('phoneNumber')
+      .trim()
+      .notEmpty()
+      .withMessage('Phone number is required')
+      .matches(/^(\+93|0)?[\d\s-]{8,15}$/)
+      .withMessage('Enter a valid Afghanistan phone number'),
+  ],
+  updateProfile
+);
 
 router.delete('/delete', authenticate, deleteAccount);
 

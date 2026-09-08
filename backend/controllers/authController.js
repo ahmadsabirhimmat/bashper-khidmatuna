@@ -444,6 +444,31 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      message: errors.array().map((item) => item.msg).filter(Boolean).join('. ') || 'Validation failed',
+      errors: errors.array(),
+    });
+  }
+
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.fullName = String(req.body.fullName || '').trim();
+    user.phoneNumber = String(req.body.phoneNumber || '').trim();
+    await user.save();
+    res.json(toUserResponse(user));
+  } catch (error) {
+    console.error('Update profile error:', error.message);
+    res.status(500).json({ message: 'Unable to update profile' });
+  }
+};
+
 const deleteAccount = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -475,5 +500,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   getCurrentUser,
+  updateProfile,
   deleteAccount,
 };
