@@ -59,7 +59,7 @@ export const Footer = () => {
                     <div className="inline-flex items-center gap-3">
                         <BenawaLogo size="2xs" className="shrink-0" />
                         <p className="text-xl font-extrabold tracking-tight sm:text-2xl">
-                            {translate("Bashper Khidmatona", "بشپر خدمتونه")}
+                            {translate("Bashper Khidmatuna", "بشپر خدمتونه")}
                         </p>
                     </div>
                     <p className="max-w-md text-sm leading-relaxed text-white/70 sm:text-[0.95rem]">
@@ -110,7 +110,7 @@ export const Footer = () => {
             </div>
             <div className="border-t border-white/10 px-4 py-4 text-center text-xs text-white/50">
                 {translate(
-                    `© ${currentYear} Bashper Khidmatona. All rights reserved.`,
+                    `© ${currentYear} Bashper Khidmatuna. All rights reserved.`,
                     `© ${currentYear} بشپر خدمتونه. ټول حقوق خوندي دي.`
                 )}
             </div>

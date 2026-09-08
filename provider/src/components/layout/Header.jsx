@@ -34,7 +34,7 @@ const BrandMark = ({ translate }) => (
                 {translate("Bashper", "بشپر")}
             </span>
             <span className="block truncate text-[0.7rem] font-semibold tracking-[0.14em] text-[#8BB4FF] sm:text-xs">
-                {translate("Khidmatona", "خدمتونه")}
+                {translate("Khidmatuna", "خدمتونه")}
             </span>
         </span>
     </span>

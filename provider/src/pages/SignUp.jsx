@@ -85,7 +85,7 @@ export const SignUp = () => {
                 </h1>
                 <p className="text-sm text-slate-500 md:text-base">
                     {translate(
-                        "Invite trusted responders, coordinate hospitals and field units, and keep critical contact data synced with Bashper Khidmatona.",
+                        "Invite trusted responders, coordinate hospitals and field units, and keep critical contact data synced with Bashper Khidmatuna.",
                         "باوري ځواب ویونکي راوبلئ، د روغتونونو او میداني ټیمونو همغږي وکړئ او د بشپر خدمتونو له لارې مهم تماس معلومات هممهاله وساتئ."
                     )}
                 </p>
