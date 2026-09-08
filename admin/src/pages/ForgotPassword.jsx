@@ -27,7 +27,7 @@ const ForgotPasswordPage = () => {
     setInfo(null);
     setLoading(true);
     try {
-      const response = await forgotPassword({ email: email.trim().toLowerCase() });
+      const response = await forgotPassword({ email: email.trim().toLowerCase(), role: 'admin' });
       setEmail(response.email || email.trim().toLowerCase());
       setInfo(response.message || t('resetSent'));
       setStep('otp');
@@ -60,6 +60,7 @@ const ForgotPasswordPage = () => {
         email,
         code: digits,
         purpose: 'reset',
+        role: 'admin',
       });
       if (!response?.resetToken) {
         throw new Error(t('unableStartReset'));
@@ -91,7 +92,7 @@ const ForgotPasswordPage = () => {
     setInfo(null);
     setLoading(true);
     try {
-      await resendOtp({ email, purpose: 'reset' });
+      await resendOtp({ email, purpose: 'reset', role: 'admin' });
       setInfo(t('resentReset'));
       setCode('');
       lastTried.current = '';

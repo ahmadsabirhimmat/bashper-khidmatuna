@@ -25,7 +25,7 @@ export const ForgotPassword = () => {
     setInfo("");
     setLoading(true);
     try {
-      const response = await forgotPassword({ email: email.trim().toLowerCase() });
+      const response = await forgotPassword({ email: email.trim().toLowerCase(), role: "provider" });
       setEmail(response.email || email.trim().toLowerCase());
       setInfo(
         response.message ||
@@ -61,6 +61,7 @@ export const ForgotPassword = () => {
         email,
         code: digits,
         purpose: "reset",
+        role: "provider",
       });
       if (!response?.resetToken) {
         throw new Error(translate("Unable to start password reset", "د پټنوم بیا تنظیم پیل نشو"));
@@ -92,7 +93,7 @@ export const ForgotPassword = () => {
     setInfo("");
     setLoading(true);
     try {
-      await resendOtp({ email, purpose: "reset" });
+      await resendOtp({ email, purpose: "reset", role: "provider" });
       setInfo(translate("A new code was sent to your email", "نوی کوډ ستاسو بریښنالیک ته ولېږل شو"));
       setCode("");
       lastTried.current = "";

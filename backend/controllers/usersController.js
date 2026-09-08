@@ -47,7 +47,9 @@ const purgeUserRecords = async (user) => {
     deleteUploadedFile(contact.imageUrl);
   });
   await ProviderProfile.deleteMany({ owner: user._id });
-  await EmailOtp.deleteMany({ email: user.email });
+  await EmailOtp.deleteMany({
+    $or: [{ email: user.email, role: user.role }, { 'payload.userId': user._id.toString() }],
+  });
   await user.deleteOne();
 };
 

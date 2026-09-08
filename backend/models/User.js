@@ -1,22 +1,24 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const roles = ['admin', 'provider', 'beneficiary'];
+const ROLES = ['admin', 'provider', 'beneficiary'];
 
 const userSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true },
     organization: { type: String },
-    email: { type: String, required: true, unique: true, lowercase: true },
+    email: { type: String, required: true, lowercase: true },
     phoneNumber: { type: String, required: true },
     password: { type: String, required: true, minlength: 8 },
-    role: { type: String, enum: roles, default: 'beneficiary' },
+    role: { type: String, enum: ROLES, default: 'beneficiary' },
     status: { type: String, enum: ['pending', 'active', 'suspended'], default: 'pending' },
     emailVerified: { type: Boolean, default: false },
     lastLoginAt: { type: Date },
   },
   { timestamps: true }
 );
+
+userSchema.index({ email: 1, role: 1 }, { unique: true });
 
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.isModified('password')) {
@@ -32,4 +34,19 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+userSchema.statics.ensureEmailRoleIndex = async function ensureEmailRoleIndex() {
+  try {
+    await this.collection.dropIndex('email_1');
+    console.log('[users] Same email can now be used for a mobile account and a provider account');
+  } catch (error) {
+    if (error.code !== 27 && error.codeName !== 'IndexNotFound') {
+      console.warn('[users] Could not drop email_1 index:', error.message);
+    }
+  }
+  await this.syncIndexes();
+};
+
+const User = mongoose.model('User', userSchema);
+User.ROLES = ROLES;
+
+module.exports = User;

@@ -24,13 +24,23 @@ export const Login = () => {
         setSubmitting(true);
         setFeedback("");
         try {
-            const response = await loginUser(formData);
+            const response = await loginUser({ ...formData, role: "provider" });
             if (response?.requiresOtp) {
                 setPendingOtp({
                     email: response.email,
                     purpose: response.purpose || "login",
+                    role: "provider",
                 });
                 navigate("/otp");
+                return;
+            }
+            if (response?.user?.role && response.user.role !== "provider") {
+                setFeedback(
+                    translate(
+                        "Use the mobile app to sign in with this email, or create a provider account.",
+                        "د دې بریښنالیک لپاره موبایل اپ وکاروئ، یا د چمتو کوونکي حساب جوړ کړئ."
+                    )
+                );
                 return;
             }
             persistSession(response.token, response.user);

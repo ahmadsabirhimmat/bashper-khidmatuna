@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 
 const connectDb = require('./config/db');
+const User = require('./models/User');
 const ensureAdminUser = require('./utils/ensureAdminUser');
 const { ensureSiteContact } = require('./controllers/siteContactController');
 const { ensurePolicy, ensureTerms, ensureBenawa } = require('./controllers/policyController');
@@ -190,6 +191,7 @@ app.use(errorHandler);
 const startServer = async () => {
 	try {
 		await connectDb();
+		await User.ensureEmailRoleIndex();
 		await ensureAdminUser();
 		await ensureSiteContact();
 		await ensurePolicy();

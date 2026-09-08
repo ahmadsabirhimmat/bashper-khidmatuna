@@ -16,7 +16,7 @@ const ensureAdminUser = async () => {
   }
 
   const normalizedEmail = ADMIN_EMAIL.trim().toLowerCase();
-  let adminUser = await User.findOne({ email: normalizedEmail });
+  let adminUser = await User.findOne({ email: normalizedEmail, role: 'admin' });
 
   // If the configured email is new, migrate an existing admin account instead of creating a duplicate.
   // Do NOT reset password here — keep the password already stored in MongoDB.

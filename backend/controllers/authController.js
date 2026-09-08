@@ -38,6 +38,87 @@ const toUserResponse = (user) => ({
   createdAt: user.createdAt,
 });
 
+const AUTH_ROLES = User.ROLES || ['admin', 'provider', 'beneficiary'];
+
+const normalizeRole = (value) => {
+  const role = String(value || '').trim().toLowerCase();
+  return AUTH_ROLES.includes(role) ? role : '';
+};
+
+const findOtpDoc = async (email, purpose, role) => {
+  if (role) {
+    const scoped = await EmailOtp.findOne({ email, purpose, role }).sort({ createdAt: -1 });
+    if (scoped) {
+      return scoped;
+    }
+    return EmailOtp.findOne({
+      email,
+      purpose,
+      $or: [{ role: { $exists: false } }, { role: null }],
+    }).sort({ createdAt: -1 });
+  }
+  return EmailOtp.findOne({ email, purpose }).sort({ createdAt: -1 });
+};
+
+const deleteOtps = (email, purpose, role) => {
+  const filter = { email, purpose };
+  if (role) {
+    filter.role = role;
+  } else {
+    filter.$or = [{ role: { $exists: false } }, { role: null }];
+  }
+  return EmailOtp.deleteMany(filter);
+};
+
+const deleteOtpsForUser = (user) =>
+  EmailOtp.deleteMany({
+    $or: [{ email: user.email, role: user.role }, { 'payload.userId': user._id.toString() }],
+  });
+
+const resolveUserFromOtp = async (otpDoc, email) => {
+  if (otpDoc?.payload?.userId) {
+    const byId = await User.findById(otpDoc.payload.userId);
+    if (byId) {
+      return byId;
+    }
+  }
+  const role = normalizeRole(otpDoc?.role || otpDoc?.payload?.role);
+  if (role) {
+    return User.findOne({ email, role });
+  }
+  const users = await User.find({ email });
+  return users.length === 1 ? users[0] : null;
+};
+
+const findUserForLogin = async (email, role, password) => {
+  if (role) {
+    return User.findOne({ email, role });
+  }
+
+  const users = await User.find({ email });
+  if (users.length <= 1) {
+    return users[0] || null;
+  }
+
+  const matches = [];
+  for (const user of users) {
+    if (await user.comparePassword(password)) {
+      matches.push(user);
+    }
+  }
+  if (matches.length === 1) {
+    return matches[0];
+  }
+  if (matches.length === 0) {
+    return null;
+  }
+  const error = new Error(
+    'This email is used on more than one app. Sign in from the mobile app, provider portal, or admin console.'
+  );
+  error.status = 400;
+  throw error;
+};
+
 const hashOtp = (code) => crypto.createHash('sha256').update(String(code)).digest('hex');
 
 const createOtpCode = () => String(Math.floor(100000 + Math.random() * 900000));
@@ -67,15 +148,17 @@ const respondMailError = (res, error, fallbackMessage) => {
   return res.status(500).json({ message: fallbackMessage });
 };
 
-const issueOtp = async ({ email, purpose, payload }) => {
+const issueOtp = async ({ email, purpose, payload, role }) => {
   const code = createOtpCode();
   const normalizedEmail = email.trim().toLowerCase();
+  const otpRole = normalizeRole(role);
 
-  await EmailOtp.deleteMany({ email: normalizedEmail, purpose });
+  await deleteOtps(normalizedEmail, purpose, otpRole || undefined);
   await EmailOtp.create({
     email: normalizedEmail,
     codeHash: hashOtp(code),
     purpose,
+    role: otpRole || undefined,
     payload,
     expiresAt: new Date(Date.now() + OTP_TTL_MS),
   });
@@ -106,7 +189,7 @@ const registerUser = async (req, res) => {
 
   try {
     const normalizedEmail = email.trim().toLowerCase();
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    const existingUser = await User.findOne({ email: normalizedEmail, role });
     if (existingUser) {
       if (
         (role === 'beneficiary' || role === 'provider') &&
@@ -116,7 +199,8 @@ const registerUser = async (req, res) => {
         await issueOtp({
           email: normalizedEmail,
           purpose: 'register',
-          payload: { userId: existingUser._id.toString() },
+          role,
+          payload: { userId: existingUser._id.toString(), role },
         });
         return res.status(200).json({
           requiresOtp: true,
@@ -145,7 +229,8 @@ const registerUser = async (req, res) => {
         await issueOtp({
           email: normalizedEmail,
           purpose: 'register',
-          payload: { userId: user._id.toString() },
+          role,
+          payload: { userId: user._id.toString(), role },
         });
       } catch (otpError) {
         await user.deleteOne();
@@ -162,6 +247,9 @@ const registerUser = async (req, res) => {
 
     return res.status(400).json({ message: 'Invalid registration role' });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: 'Account already exists for this email' });
+    }
     console.error('Register error:', error.message);
     return respondMailError(res, error, 'Unable to create account');
   }
@@ -173,11 +261,20 @@ const loginUser = async (req, res) => {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { email, password } = req.body;
+  const { email, password, role: requestedRole } = req.body;
 
   try {
     const normalizedEmail = email.trim().toLowerCase();
-    const user = await User.findOne({ email: normalizedEmail });
+    const role = normalizeRole(requestedRole);
+    let user;
+    try {
+      user = await findUserForLogin(normalizedEmail, role, password);
+    } catch (lookupError) {
+      if (lookupError.status === 400) {
+        return res.status(400).json({ message: lookupError.message });
+      }
+      throw lookupError;
+    }
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
@@ -195,7 +292,8 @@ const loginUser = async (req, res) => {
     await issueOtp({
       email: normalizedEmail,
       purpose: 'login',
-      payload: { userId: user._id.toString() },
+      role: user.role,
+      payload: { userId: user._id.toString(), role: user.role },
     });
 
     return res.json({
@@ -219,11 +317,12 @@ const verifyOtp = async (req, res) => {
   const email = String(req.body.email || '').trim().toLowerCase();
   const code = String(req.body.code || '').trim();
   const purpose = req.body.purpose;
+  const role = normalizeRole(req.body.role);
 
   try {
-    const otpDoc = await EmailOtp.findOne({ email, purpose }).sort({ createdAt: -1 });
+    const otpDoc = await findOtpDoc(email, purpose, role);
     if (!otpDoc) {
-      console.warn(`Verify OTP: no code for email=${email} purpose=${purpose}`);
+      console.warn(`Verify OTP: no code for email=${email} purpose=${purpose} role=${role || 'any'}`);
       return res.status(400).json({ message: 'No verification code found. Please request a new one.' });
     }
 
@@ -245,10 +344,7 @@ const verifyOtp = async (req, res) => {
 
     // Password reset: validate OTP, then return a short-lived reset token (do not log the user in).
     if (purpose === 'reset') {
-      let user = await User.findById(otpDoc.payload?.userId);
-      if (!user) {
-        user = await User.findOne({ email });
-      }
+      const user = await resolveUserFromOtp(otpDoc, email);
       if (!user) {
         await otpDoc.deleteOne();
         return res.status(404).json({ message: 'User not found' });
@@ -257,7 +353,7 @@ const verifyOtp = async (req, res) => {
         return res.status(403).json({ message: 'Account suspended. Contact support.' });
       }
 
-      await EmailOtp.deleteMany({ email, purpose: 'reset' });
+      await deleteOtps(email, 'reset', user.role);
       const resetToken = generateResetToken(user._id, user.email);
       return res.json({
         resetAllowed: true,
@@ -270,10 +366,7 @@ const verifyOtp = async (req, res) => {
     let user;
 
     if (purpose === 'register') {
-      user = await User.findById(otpDoc.payload?.userId);
-      if (!user) {
-        user = await User.findOne({ email });
-      }
+      user = await resolveUserFromOtp(otpDoc, email);
       if (!user) {
         await otpDoc.deleteOne();
         return res.status(404).json({ message: 'Signup session expired. Please register again.' });
@@ -283,10 +376,7 @@ const verifyOtp = async (req, res) => {
       user.lastLoginAt = new Date();
       await user.save();
     } else {
-      user = await User.findById(otpDoc.payload?.userId);
-      if (!user) {
-        user = await User.findOne({ email });
-      }
+      user = await resolveUserFromOtp(otpDoc, email);
       if (!user) {
         await otpDoc.deleteOne();
         return res.status(404).json({ message: 'User not found' });
@@ -302,7 +392,7 @@ const verifyOtp = async (req, res) => {
       await user.save();
     }
 
-    await EmailOtp.deleteMany({ email, purpose });
+    await deleteOtps(email, purpose, user.role);
 
     const token = generateToken(user._id, user.role);
     res.json({
@@ -322,9 +412,22 @@ const forgotPassword = async (req, res) => {
   }
 
   const normalizedEmail = String(req.body.email || '').trim().toLowerCase();
+  const role = normalizeRole(req.body.role);
 
   try {
-    const user = await User.findOne({ email: normalizedEmail });
+    let user;
+    if (role) {
+      user = await User.findOne({ email: normalizedEmail, role });
+    } else {
+      const users = await User.find({ email: normalizedEmail });
+      if (users.length > 1) {
+        return res.status(400).json({
+          message:
+            'This email is used on more than one app. Reset the password from the mobile app, provider portal, or admin console.',
+        });
+      }
+      user = users[0];
+    }
     if (!user) {
       return res.status(404).json({ message: 'No account found for this email' });
     }
@@ -335,7 +438,8 @@ const forgotPassword = async (req, res) => {
     await issueOtp({
       email: normalizedEmail,
       purpose: 'reset',
-      payload: { userId: user._id.toString() },
+      role: user.role,
+      payload: { userId: user._id.toString(), role: user.role },
     });
 
     return res.json({
@@ -387,7 +491,7 @@ const resetPassword = async (req, res) => {
     }
     await user.save();
 
-    await EmailOtp.deleteMany({ email: normalizedEmail, purpose: 'reset' });
+    await deleteOtps(normalizedEmail, 'reset', user.role);
 
     return res.json({
       message: 'Password updated successfully. You can sign in with your new password.',
@@ -406,9 +510,10 @@ const resendOtp = async (req, res) => {
 
   const email = String(req.body.email || '').trim().toLowerCase();
   const purpose = req.body.purpose;
+  const role = normalizeRole(req.body.role);
 
   try {
-    const existing = await EmailOtp.findOne({ email, purpose }).sort({ createdAt: -1 });
+    const existing = await findOtpDoc(email, purpose, role);
     if (!existing) {
       return res.status(400).json({ message: 'No pending verification found. Start login or signup again.' });
     }
@@ -416,6 +521,7 @@ const resendOtp = async (req, res) => {
     await issueOtp({
       email,
       purpose,
+      role: normalizeRole(existing.role || existing.payload?.role || role),
       payload: existing.payload,
     });
 
@@ -482,7 +588,7 @@ const deleteAccount = async (req, res) => {
     });
 
     await ProviderProfile.deleteMany({ owner: user._id });
-    await EmailOtp.deleteMany({ email: user.email });
+    await deleteOtpsForUser(user);
     await user.deleteOne();
 
     res.json({ message: 'Account and all related contacts deleted' });

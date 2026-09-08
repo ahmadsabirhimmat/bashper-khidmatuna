@@ -18,11 +18,12 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticating(true);
     setAuthError(null);
     try {
-      const response = await loginUser(credentials);
+      const response = await loginUser({ ...credentials, role: 'admin' });
       if (response?.requiresOtp) {
         const challenge = {
           email: response.email,
           purpose: response.purpose || 'login',
+          role: 'admin',
           message: response.message,
         };
         setPendingOtp(challenge);
@@ -45,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticating(true);
     setAuthError(null);
     try {
-      const response = await verifyOtp({ email, code, purpose });
+      const response = await verifyOtp({ email, code, purpose, role: 'admin' });
       if (response?.user?.role !== 'admin') {
         clearSession();
         flushSync(() => {
@@ -74,7 +75,7 @@ export const AuthProvider = ({ children }) => {
     if (!pendingOtp?.email || !pendingOtp?.purpose) {
       throw new Error('No pending verification found');
     }
-    return resendOtp({ email: pendingOtp.email, purpose: pendingOtp.purpose });
+    return resendOtp({ email: pendingOtp.email, purpose: pendingOtp.purpose, role: pendingOtp.role || 'admin' });
   }, [pendingOtp]);
 
   const logout = useCallback(() => {

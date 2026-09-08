@@ -19,7 +19,7 @@ const run = async () => {
   await connectDb();
 
   try {
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email, role: 'admin' });
     if (existingUser) {
       existingUser.fullName = fullName;
       existingUser.password = password; // hashed in pre-save hook

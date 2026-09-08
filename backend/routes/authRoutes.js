@@ -41,6 +41,7 @@ router.post(
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('password').notEmpty().withMessage('Password is required'),
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
   ],
   loginUser
 );
@@ -48,7 +49,9 @@ router.post(
 router.post(
   '/forgot-password',
   authLimiter,
-  [body('email').isEmail().withMessage('Valid email is required')],
+  [    body('email').isEmail().withMessage('Valid email is required'),
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
+  ],
   forgotPassword
 );
 
@@ -74,6 +77,7 @@ router.post(
       .isNumeric()
       .withMessage('Verification code must be numeric'),
     body('purpose').isIn(otpPurposes).withMessage('Invalid verification purpose'),
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
   ],
   verifyOtp
 );
@@ -84,6 +88,7 @@ router.post(
   [
     body('email').isEmail().withMessage('Valid email is required'),
     body('purpose').isIn(otpPurposes).withMessage('Invalid verification purpose'),
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
   ],
   resendOtp
 );

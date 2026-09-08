@@ -50,6 +50,7 @@ export const SignUp = () => {
                 setPendingOtp({
                     email: response.email,
                     purpose: response.purpose || "register",
+                    role: "provider",
                 });
                 navigate("/otp");
                 return;

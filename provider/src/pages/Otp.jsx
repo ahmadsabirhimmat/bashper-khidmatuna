@@ -61,7 +61,17 @@ export const Otp = () => {
         email: pendingOtp.email,
         code: digits,
         purpose: pendingOtp.purpose || "login",
+        role: pendingOtp.role || "provider",
       });
+      if (response?.user?.role && response.user.role !== "provider") {
+        setError(
+          translate(
+            "Use the mobile app to sign in with this email, or create a provider account.",
+            "د دې بریښنالیک لپاره موبایل اپ وکاروئ، یا د چمتو کوونکي حساب جوړ کړئ."
+          )
+        );
+        return;
+      }
       persistSession(response.token, response.user);
       setFeedback(translate("Verified. Redirecting...", "تایید شو. لېږد روان دی..."));
     } catch (err) {
@@ -92,6 +102,7 @@ export const Otp = () => {
       await resendOtp({
         email: pendingOtp.email,
         purpose: pendingOtp.purpose || "login",
+        role: pendingOtp.role || "provider",
       });
       setFeedback(translate("A new code was sent to your email", "نوی کوډ ستاسو بریښنالیک ته ولېږل شو"));
       setCode("");
