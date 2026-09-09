@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const { OAuth2Client } = require('google-auth-library');
 const { validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
@@ -255,6 +256,146 @@ const registerUser = async (req, res) => {
   }
 };
 
+const googleAudiences = () =>
+  [process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_ANDROID_CLIENT_ID]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean);
+
+const verifyGoogleIdToken = async (idToken) => {
+  const audiences = googleAudiences();
+  if (!audiences.length) {
+    const error = new Error('Google sign-in is not configured on the server.');
+    error.status = 503;
+    throw error;
+  }
+
+  const client = new OAuth2Client(audiences[0]);
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: audiences.length === 1 ? audiences[0] : audiences,
+  });
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new Error('Invalid Google token');
+  }
+  return payload;
+};
+
+const ALLOWED_GOOGLE_REDIRECTS = new Set([
+  'https://auth.expo.io/@sabirhimmatts-team/bashper-khidmatuna',
+]);
+
+const exchangeGoogleCode = async (code, codeVerifier, redirectUri) => {
+  const clientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+  const clientSecret = String(process.env.GOOGLE_CLIENT_SECRET || '').trim();
+  if (!clientId || !clientSecret) {
+    const error = new Error('Google sign-in is not configured on the server.');
+    error.status = 503;
+    throw error;
+  }
+  if (!ALLOWED_GOOGLE_REDIRECTS.has(redirectUri)) {
+    const error = new Error('Invalid Google redirect.');
+    error.status = 400;
+    throw error;
+  }
+
+  const client = new OAuth2Client(clientId, clientSecret, redirectUri);
+  const { tokens } = await client.getToken({
+    code,
+    codeVerifier,
+    redirect_uri: redirectUri,
+  });
+  if (!tokens.id_token) {
+    throw new Error('Google did not return an ID token.');
+  }
+  return verifyGoogleIdToken(tokens.id_token);
+};
+
+const loginWithGoogle = async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  try {
+    const idToken = String(req.body.idToken || '').trim();
+    const code = String(req.body.code || '').trim();
+    const codeVerifier = String(req.body.codeVerifier || '').trim();
+    const redirectUri = String(req.body.redirectUri || '').trim();
+
+    const payload = idToken
+      ? await verifyGoogleIdToken(idToken)
+      : code && codeVerifier && redirectUri
+        ? await exchangeGoogleCode(code, codeVerifier, redirectUri)
+        : null;
+
+    if (!payload) {
+      return res.status(400).json({ message: 'Google sign-in token is required' });
+    }
+    const email = String(payload.email || '').trim().toLowerCase();
+    const googleId = String(payload.sub || '').trim();
+    const fullName = String(payload.name || '').trim() || email.split('@')[0] || 'Google user';
+
+    if (!email || !googleId) {
+      return res.status(401).json({ message: 'Google did not return a valid account.' });
+    }
+    if (payload.email_verified === false) {
+      return res.status(401).json({ message: 'Verify your Google email, then try again.' });
+    }
+
+    let user = await User.findOne({ $or: [{ googleId }, { email, role: 'beneficiary' }] });
+
+    if (user && user.role !== 'beneficiary') {
+      return res.status(400).json({
+        message: 'Use the provider portal or admin console to sign in with this email.',
+      });
+    }
+
+    if (user) {
+      if (user.status === 'suspended') {
+        return res.status(403).json({ message: 'Account suspended. Contact support.' });
+      }
+      if (user.googleId && user.googleId !== googleId) {
+        return res.status(401).json({ message: 'This email is linked to a different Google account.' });
+      }
+      if (!user.googleId) {
+        user.googleId = googleId;
+      }
+      user.emailVerified = true;
+      if (user.status === 'pending') {
+        user.status = 'active';
+      }
+      if (!user.fullName) {
+        user.fullName = fullName;
+      }
+      user.lastLoginAt = new Date();
+      await user.save();
+    } else {
+      user = await User.create({
+        fullName,
+        email,
+        phoneNumber: '',
+        googleId,
+        role: 'beneficiary',
+        status: 'active',
+        emailVerified: true,
+        lastLoginAt: new Date(),
+      });
+    }
+
+    return res.json({
+      token: generateToken(user._id, user.role),
+      user: toUserResponse(user),
+    });
+  } catch (error) {
+    if (error.status) {
+      return res.status(error.status).json({ message: error.message });
+    }
+    console.error('Google login error:', error.message);
+    return res.status(401).json({ message: 'Google sign-in failed. Try again.' });
+  }
+};
+
 const loginUser = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -277,6 +418,12 @@ const loginUser = async (req, res) => {
     }
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.googleId && !user.password) {
+      return res.status(400).json({
+        message: 'This account uses Google sign-in. Tap Continue with Google.',
+      });
     }
 
     const isMatch = await user.comparePassword(password);
@@ -601,6 +748,7 @@ const deleteAccount = async (req, res) => {
 module.exports = {
   registerUser,
   loginUser,
+  loginWithGoogle,
   verifyOtp,
   resendOtp,
   forgotPassword,

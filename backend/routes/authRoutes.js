@@ -3,6 +3,7 @@ const { body } = require('express-validator');
 const {
   registerUser,
   loginUser,
+  loginWithGoogle,
   verifyOtp,
   resendOtp,
   forgotPassword,
@@ -44,6 +45,18 @@ router.post(
     body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
   ],
   loginUser
+);
+
+router.post(
+  '/google',
+  authLimiter,
+  [
+    body('idToken').optional().isString(),
+    body('code').optional().isString(),
+    body('codeVerifier').optional().isString(),
+    body('redirectUri').optional().isString(),
+  ],
+  loginWithGoogle
 );
 
 router.post(
