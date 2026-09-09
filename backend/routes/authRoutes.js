@@ -4,6 +4,9 @@ const {
   registerUser,
   loginUser,
   loginWithGoogle,
+  startGoogleLogin,
+  googleOAuthCallback,
+  getGoogleTicket,
   verifyOtp,
   resendOtp,
   forgotPassword,
@@ -58,6 +61,10 @@ router.post(
   ],
   loginWithGoogle
 );
+
+router.post('/google/start', authLimiter, startGoogleLogin);
+router.get('/google/callback', authLimiter, googleOAuthCallback);
+router.get('/google/ticket/:ticketId', authLimiter, getGoogleTicket);
 
 router.post(
   '/forgot-password',

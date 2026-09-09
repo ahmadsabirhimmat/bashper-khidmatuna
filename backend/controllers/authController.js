@@ -12,6 +12,15 @@ const {
   assertMailReady,
 } = require('../utils/emailService');
 const { deleteUploadedFile } = require('../middleware/uploadMiddleware');
+const {
+  googleRedirectUri,
+  createTicket,
+  getTicket,
+  completeTicket,
+  consumeTicket,
+  pkcePair,
+  htmlPage,
+} = require('../utils/googleOAuth');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
 const MAX_ATTEMPTS = 5;
@@ -281,9 +290,80 @@ const verifyGoogleIdToken = async (idToken) => {
   return payload;
 };
 
-const ALLOWED_GOOGLE_REDIRECTS = new Set([
-  'https://auth.expo.io/@sabirhimmatts-team/bashper-khidmatuna',
-]);
+const allowedGoogleRedirects = () =>
+  new Set(
+    [
+      'https://auth.expo.io/@sabirhimmatts-team/bashper-khidmatuna',
+      googleRedirectUri(),
+      'http://localhost:4000/api/auth/google/callback',
+    ].filter(Boolean)
+  );
+
+const upsertGoogleBeneficiary = async (payload) => {
+  const email = String(payload.email || '').trim().toLowerCase();
+  const googleId = String(payload.sub || '').trim();
+  const fullName = String(payload.name || '').trim() || email.split('@')[0] || 'Google user';
+
+  if (!email || !googleId) {
+    const error = new Error('Google did not return a valid account.');
+    error.status = 401;
+    throw error;
+  }
+  if (payload.email_verified === false) {
+    const error = new Error('Verify your Google email, then try again.');
+    error.status = 401;
+    throw error;
+  }
+
+  let user = await User.findOne({ $or: [{ googleId }, { email, role: 'beneficiary' }] });
+
+  if (user && user.role !== 'beneficiary') {
+    const error = new Error('Use the provider portal or admin console to sign in with this email.');
+    error.status = 400;
+    throw error;
+  }
+
+  if (user) {
+    if (user.status === 'suspended') {
+      const error = new Error('Account suspended. Contact support.');
+      error.status = 403;
+      throw error;
+    }
+    if (user.googleId && user.googleId !== googleId) {
+      const error = new Error('This email is linked to a different Google account.');
+      error.status = 401;
+      throw error;
+    }
+    if (!user.googleId) {
+      user.googleId = googleId;
+    }
+    user.emailVerified = true;
+    if (user.status === 'pending') {
+      user.status = 'active';
+    }
+    if (!user.fullName) {
+      user.fullName = fullName;
+    }
+    user.lastLoginAt = new Date();
+    await user.save();
+  } else {
+    user = await User.create({
+      fullName,
+      email,
+      phoneNumber: '',
+      googleId,
+      role: 'beneficiary',
+      status: 'active',
+      emailVerified: true,
+      lastLoginAt: new Date(),
+    });
+  }
+
+  return {
+    token: generateToken(user._id, user.role),
+    user: toUserResponse(user),
+  };
+};
 
 const exchangeGoogleCode = async (code, codeVerifier, redirectUri) => {
   const clientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
@@ -293,7 +373,7 @@ const exchangeGoogleCode = async (code, codeVerifier, redirectUri) => {
     error.status = 503;
     throw error;
   }
-  if (!ALLOWED_GOOGLE_REDIRECTS.has(redirectUri)) {
+  if (!allowedGoogleRedirects().has(redirectUri)) {
     const error = new Error('Invalid Google redirect.');
     error.status = 400;
     throw error;
@@ -332,61 +412,8 @@ const loginWithGoogle = async (req, res) => {
     if (!payload) {
       return res.status(400).json({ message: 'Google sign-in token is required' });
     }
-    const email = String(payload.email || '').trim().toLowerCase();
-    const googleId = String(payload.sub || '').trim();
-    const fullName = String(payload.name || '').trim() || email.split('@')[0] || 'Google user';
-
-    if (!email || !googleId) {
-      return res.status(401).json({ message: 'Google did not return a valid account.' });
-    }
-    if (payload.email_verified === false) {
-      return res.status(401).json({ message: 'Verify your Google email, then try again.' });
-    }
-
-    let user = await User.findOne({ $or: [{ googleId }, { email, role: 'beneficiary' }] });
-
-    if (user && user.role !== 'beneficiary') {
-      return res.status(400).json({
-        message: 'Use the provider portal or admin console to sign in with this email.',
-      });
-    }
-
-    if (user) {
-      if (user.status === 'suspended') {
-        return res.status(403).json({ message: 'Account suspended. Contact support.' });
-      }
-      if (user.googleId && user.googleId !== googleId) {
-        return res.status(401).json({ message: 'This email is linked to a different Google account.' });
-      }
-      if (!user.googleId) {
-        user.googleId = googleId;
-      }
-      user.emailVerified = true;
-      if (user.status === 'pending') {
-        user.status = 'active';
-      }
-      if (!user.fullName) {
-        user.fullName = fullName;
-      }
-      user.lastLoginAt = new Date();
-      await user.save();
-    } else {
-      user = await User.create({
-        fullName,
-        email,
-        phoneNumber: '',
-        googleId,
-        role: 'beneficiary',
-        status: 'active',
-        emailVerified: true,
-        lastLoginAt: new Date(),
-      });
-    }
-
-    return res.json({
-      token: generateToken(user._id, user.role),
-      user: toUserResponse(user),
-    });
+    const session = await upsertGoogleBeneficiary(payload);
+    return res.json(session);
   } catch (error) {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
@@ -745,10 +772,100 @@ const deleteAccount = async (req, res) => {
   }
 };
 
+const startGoogleLogin = async (_req, res) => {
+  try {
+    const clientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
+    const redirectUri = googleRedirectUri();
+    if (!clientId || !redirectUri || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(503).json({ message: 'Google sign-in is not configured on the server.' });
+    }
+
+    const { verifier, challenge } = pkcePair();
+    const ticketId = createTicket(verifier);
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: redirectUri,
+      response_type: 'code',
+      scope: 'openid email profile',
+      state: ticketId,
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      prompt: 'select_account',
+      access_type: 'online',
+    });
+
+    return res.json({
+      ticketId,
+      authUrl: `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`,
+    });
+  } catch (error) {
+    console.error('Google start error:', error.message);
+    return res.status(500).json({ message: 'Unable to start Google sign-in' });
+  }
+};
+
+const googleOAuthCallback = async (req, res) => {
+  const ticketId = String(req.query.state || '').trim();
+  const code = String(req.query.code || '').trim();
+  const googleError = String(req.query.error || '').trim();
+
+  const fail = (message) => {
+    if (ticketId) {
+      completeTicket(ticketId, { status: 'failed', message });
+    }
+    return res
+      .status(400)
+      .type('html')
+      .send(htmlPage('Google sign-in failed', `${message} Close this screen and return to the app.`));
+  };
+
+  if (googleError) {
+    return fail('Google cancelled the sign-in.');
+  }
+
+  const ticket = getTicket(ticketId);
+  if (!ticket || !code) {
+    return fail('This Google sign-in session expired. Try again from the app.');
+  }
+
+  try {
+    const payload = await exchangeGoogleCode(code, ticket.codeVerifier, googleRedirectUri());
+    const session = await upsertGoogleBeneficiary(payload);
+    completeTicket(ticketId, { status: 'ready', ...session });
+    return res
+      .type('html')
+      .send(htmlPage('Signed in', 'You can close this screen and return to Bashper Khidmatuna.'));
+  } catch (error) {
+    console.error('Google callback error:', error.message);
+    return fail(error.message || 'Google sign-in failed.');
+  }
+};
+
+const getGoogleTicket = async (req, res) => {
+  const ticket = consumeTicket(String(req.params.ticketId || '').trim());
+  if (!ticket) {
+    return res.json({ status: 'expired', message: 'Google sign-in expired. Try again.' });
+  }
+  if (ticket.status === 'failed') {
+    return res.json({ status: 'failed', message: ticket.message || 'Google sign-in failed.' });
+  }
+  if (ticket.status !== 'ready') {
+    return res.json({ status: 'pending' });
+  }
+  return res.json({
+    status: 'ready',
+    token: ticket.token,
+    user: ticket.user,
+  });
+};
+
 module.exports = {
   registerUser,
   loginUser,
   loginWithGoogle,
+  startGoogleLogin,
+  googleOAuthCallback,
+  getGoogleTicket,
   verifyOtp,
   resendOtp,
   forgotPassword,
