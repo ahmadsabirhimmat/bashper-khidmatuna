@@ -71,12 +71,13 @@ const pkcePair = () => {
   return { verifier, challenge };
 };
 
-const htmlPage = (title, body) => `<!DOCTYPE html>
+const htmlPage = (title, body, { redirectTo } = {}) => `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${title}</title>
+  ${redirectTo ? `<meta http-equiv="refresh" content="0;url=${redirectTo}" />` : ''}
   <style>
     body { font-family: sans-serif; background: #0B254A; color: #fff; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
     .card { max-width: 360px; text-align: center; }
@@ -89,8 +90,16 @@ const htmlPage = (title, body) => `<!DOCTYPE html>
     <h1>${title}</h1>
     <p>${body}</p>
   </div>
+  ${
+    redirectTo
+      ? `<script>window.location.replace(${JSON.stringify(redirectTo)});</script>`
+      : ''
+  }
 </body>
 </html>`;
+
+/** Deep link that returns the in-app browser to Bashper after Google finishes. */
+const APP_GOOGLE_RETURN = 'bashperkhidmatuna://auth/google';
 
 module.exports = {
   publicApiUrl,
@@ -101,4 +110,5 @@ module.exports = {
   consumeTicket,
   pkcePair,
   htmlPage,
+  APP_GOOGLE_RETURN,
 };

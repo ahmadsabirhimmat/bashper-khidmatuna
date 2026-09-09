@@ -20,6 +20,7 @@ const {
   consumeTicket,
   pkcePair,
   htmlPage,
+  APP_GOOGLE_RETURN,
 } = require('../utils/googleOAuth');
 
 const OTP_TTL_MS = 10 * 60 * 1000;
@@ -816,7 +817,13 @@ const googleOAuthCallback = async (req, res) => {
     return res
       .status(400)
       .type('html')
-      .send(htmlPage('Google sign-in failed', `${message} Close this screen and return to the app.`));
+      .send(
+        htmlPage(
+          'Google sign-in failed',
+          `${message} Returning to the app…`,
+          { redirectTo: `${APP_GOOGLE_RETURN}?status=failed` }
+        )
+      );
   };
 
   if (googleError) {
@@ -834,7 +841,11 @@ const googleOAuthCallback = async (req, res) => {
     completeTicket(ticketId, { status: 'ready', ...session });
     return res
       .type('html')
-      .send(htmlPage('Signed in', 'You can close this screen and return to Bashper Khidmatuna.'));
+      .send(
+        htmlPage('Signed in', 'Returning to Bashper Khidmatuna…', {
+          redirectTo: `${APP_GOOGLE_RETURN}?status=ready`,
+        })
+      );
   } catch (error) {
     console.error('Google callback error:', error.message);
     return fail(error.message || 'Google sign-in failed.');
