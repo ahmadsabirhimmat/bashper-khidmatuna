@@ -43,3 +43,12 @@ export const deleteAccount = (options = {}) =>
     method: 'DELETE',
     ...options,
   });
+
+export const startGoogleLogin = (payload) =>
+  apiRequest('/api/auth/google/start', {
+    method: 'POST',
+    body: payload,
+  });
+
+export const getGoogleTicket = (ticketId) =>
+  apiRequest(`/api/auth/google/ticket/${ticketId}`);

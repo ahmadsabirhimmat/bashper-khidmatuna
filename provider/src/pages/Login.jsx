@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../api/auth";
 import { PasswordInput } from "../components/PasswordInput";
 import { BenawaLogo } from "../components/BenawaLogo";
+import { GoogleSignInButton } from "../components/GoogleSignInButton";
+import { useGoogleLogin } from "../hooks/useGoogleLogin";
 
 export const Login = () => {
     const { translate } = useLanguage();
@@ -13,6 +15,19 @@ export const Login = () => {
     const [formData, setFormData] = useState({ email: "", password: "" });
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState("");
+    const handleGoogleError = useCallback((message) => {
+        setFeedback(message);
+    }, []);
+    const { googleBusy, startGoogle } = useGoogleLogin({
+        role: "provider",
+        returnPath: "/login",
+        persistSession,
+        onError: handleGoogleError,
+        wrongRoleMessage: translate(
+            "Use the mobile app to sign in with this email, or create a provider account.",
+            "د دې بریښنالیک لپاره موبایل اپ وکاروئ، یا د چمتو کوونکي حساب جوړ کړئ."
+        ),
+    });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -113,11 +128,23 @@ export const Login = () => {
                     </div>
                     <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || googleBusy}
                         className="mt-8 w-full whitespace-normal rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-60"
                     >
                         {submitting ? translate("Sending code...", "کوډ لېږل کېږي...") : translate("Continue", "دوام")}
                     </button>
+                    <div className="mt-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        <span className="h-px flex-1 bg-slate-200" />
+                        {translate("or continue with", "یا له دې سره دوام ورکړئ")}
+                        <span className="h-px flex-1 bg-slate-200" />
+                    </div>
+                    <GoogleSignInButton
+                        busy={googleBusy}
+                        disabled={submitting || googleBusy}
+                        label={translate("Continue with Google", "د ګوګل له لارې دوام")}
+                        waitingLabel={translate("Signing in with Google...", "د ګوګل له لارې ننوتل کېږي...")}
+                        onClick={startGoogle}
+                    />
                     {feedback && (
                         <p className="mt-4 text-center text-sm text-slate-500">{feedback}</p>
                     )}

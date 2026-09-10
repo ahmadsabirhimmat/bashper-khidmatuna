@@ -29,3 +29,12 @@ export const resetPassword = (payload) =>
     method: 'POST',
     body: payload,
   });
+
+export const startGoogleLogin = (payload) =>
+  apiRequest('/api/auth/google/start', {
+    method: 'POST',
+    body: payload,
+  });
+
+export const getGoogleTicket = (ticketId) =>
+  apiRequest(`/api/auth/google/ticket/${ticketId}`);

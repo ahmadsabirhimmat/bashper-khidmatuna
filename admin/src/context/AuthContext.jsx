@@ -42,6 +42,33 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
+  const completeGoogleLogin = useCallback(async (response) => {
+    setIsAuthenticating(true);
+    setAuthError(null);
+    try {
+      if (response?.user?.role !== 'admin') {
+        clearSession();
+        flushSync(() => {
+          setSession(null);
+          setPendingOtp(null);
+        });
+        throw new Error('Admin credentials required. Non-admin accounts cannot access this panel.');
+      }
+
+      persistSession(response.token, response.user);
+      flushSync(() => {
+        setSession({ token: response.token, user: response.user });
+        setPendingOtp(null);
+      });
+      return response;
+    } catch (error) {
+      setAuthError(error.message || 'Unable to sign in');
+      throw error;
+    } finally {
+      setIsAuthenticating(false);
+    }
+  }, []);
+
   const completeOtp = useCallback(async ({ email, code, purpose }) => {
     setIsAuthenticating(true);
     setAuthError(null);
@@ -91,6 +118,7 @@ export const AuthProvider = ({ children }) => {
       role: session?.user?.role,
       isAuthenticated: Boolean(session?.token),
       login,
+      completeGoogleLogin,
       completeOtp,
       resendPendingOtp,
       pendingOtp,
@@ -102,6 +130,7 @@ export const AuthProvider = ({ children }) => {
     [
       session,
       login,
+      completeGoogleLogin,
       completeOtp,
       resendPendingOtp,
       pendingOtp,

@@ -25,12 +25,73 @@ const pruneTickets = () => {
   });
 };
 
-const createTicket = (codeVerifier) => {
+const DEFAULT_WEB_ORIGINS = [
+  'http://localhost:5175',
+  'http://localhost:4175',
+  'http://localhost:5176',
+  'http://localhost:4176',
+  'https://bashper-khidmatuna-1.onrender.com',
+  'https://bashper-khidmatuna-provider.onrender.com',
+];
+
+const allowedGoogleReturnOrigins = () => {
+  const origins = new Set(DEFAULT_WEB_ORIGINS);
+  String(process.env.CLIENT_URL || '')
+    .split(',')
+    .map((value) => value.trim().replace(/\/$/, ''))
+    .filter(Boolean)
+    .forEach((origin) => origins.add(origin));
+
+  [...origins].forEach((origin) => {
+    try {
+      const url = new URL(origin);
+      if (url.hostname === 'localhost') {
+        origins.add(`${url.protocol}//127.0.0.1${url.port ? `:${url.port}` : ''}`);
+      }
+      if (url.hostname === '127.0.0.1') {
+        origins.add(`${url.protocol}//localhost${url.port ? `:${url.port}` : ''}`);
+      }
+    } catch {
+      origins.delete(origin);
+    }
+  });
+  return origins;
+};
+
+const isAllowedGoogleReturnTo = (value) => {
+  try {
+    const url = new URL(String(value || '').trim());
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    if (url.username || url.password) {
+      return false;
+    }
+    return allowedGoogleReturnOrigins().has(url.origin);
+  } catch {
+    return false;
+  }
+};
+
+const appendQuery = (base, params = {}) => {
+  const url = new URL(base);
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      url.searchParams.set(key, String(value));
+    }
+  });
+  return url.toString();
+};
+
+const createTicket = (codeVerifier, extra = {}) => {
   pruneTickets();
   const id = crypto.randomBytes(24).toString('hex');
   tickets.set(id, {
     status: 'pending',
     codeVerifier,
+    role: extra.role || 'beneficiary',
+    returnTo: extra.returnTo || '',
+    allowCreate: Boolean(extra.allowCreate),
     expiresAt: Date.now() + TICKET_TTL_MS,
   });
   return id;
@@ -110,5 +171,7 @@ module.exports = {
   consumeTicket,
   pkcePair,
   htmlPage,
+  appendQuery,
+  isAllowedGoogleReturnTo,
   APP_GOOGLE_RETURN,
 };

@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext";
 import { useAuth } from "../context/AuthContext";
 import { registerUser } from "../api/auth";
 import { PasswordInput } from "../components/PasswordInput";
 import { BenawaLogo } from "../components/BenawaLogo";
+import { GoogleSignInButton } from "../components/GoogleSignInButton";
+import { useGoogleLogin } from "../hooks/useGoogleLogin";
 
 const initialForm = {
     fullName: "",
@@ -22,6 +24,21 @@ export const SignUp = () => {
     const [formData, setFormData] = useState(initialForm);
     const [submitting, setSubmitting] = useState(false);
     const [feedback, setFeedback] = useState("");
+    const [legalAccepted, setLegalAccepted] = useState(false);
+    const handleGoogleError = useCallback((message) => {
+        setFeedback(message);
+    }, []);
+    const { googleBusy, startGoogle } = useGoogleLogin({
+        role: "provider",
+        allowCreate: true,
+        returnPath: "/signup",
+        persistSession,
+        onError: handleGoogleError,
+        wrongRoleMessage: translate(
+            "Use the mobile app to sign in with this email, or create a provider account.",
+            "د دې بریښنالیک لپاره موبایل اپ وکاروئ، یا د چمتو کوونکي حساب جوړ کړئ."
+        ),
+    });
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -169,7 +186,14 @@ export const SignUp = () => {
                     </label>
 
                     <div className="mt-6 flex items-start gap-3 text-sm text-slate-600">
-                        <input type="checkbox" id="legal-consent" className="mt-1 h-4 w-4 rounded border-slate-300" required />
+                        <input
+                            type="checkbox"
+                            id="legal-consent"
+                            className="mt-1 h-4 w-4 rounded border-slate-300"
+                            required
+                            checked={legalAccepted}
+                            onChange={(event) => setLegalAccepted(event.target.checked)}
+                        />
                         <p>
                             <label htmlFor="legal-consent">
                                 {translate("I accept the", "زه منم", "می‌پذیرم")}{" "}
@@ -193,11 +217,34 @@ export const SignUp = () => {
 
                     <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || googleBusy}
                         className="mt-8 w-full rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold uppercase tracking-[0.3em] text-white shadow-lg transition hover:bg-blue-700 disabled:opacity-60"
                     >
                         {submitting ? translate("Sending code...", "کوډ لېږل کېږي...") : translate("Create Account", "حساب جوړ کړئ")}
                     </button>
+                    <div className="mt-6 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+                        <span className="h-px flex-1 bg-slate-200" />
+                        {translate("or continue with", "یا له دې سره دوام ورکړئ")}
+                        <span className="h-px flex-1 bg-slate-200" />
+                    </div>
+                    <GoogleSignInButton
+                        busy={googleBusy}
+                        disabled={submitting || googleBusy}
+                        label={translate("Continue with Google", "د ګوګل له لارې دوام")}
+                        waitingLabel={translate("Signing in with Google...", "د ګوګل له لارې ننوتل کېږي...")}
+                        onClick={() => {
+                            if (!legalAccepted) {
+                                setFeedback(
+                                    translate(
+                                        "Accept the privacy policy and terms before continuing with Google.",
+                                        "مخکې له ګوګل څخه د محرمیت تګلاره او شرطونه ومنئ."
+                                    )
+                                );
+                                return;
+                            }
+                            void startGoogle();
+                        }}
+                    />
                     {feedback && (
                         <p className="mt-4 text-center text-sm text-slate-500">{feedback}</p>
                     )}

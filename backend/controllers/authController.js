@@ -17,9 +17,10 @@ const {
   createTicket,
   getTicket,
   completeTicket,
-  consumeTicket,
   pkcePair,
   htmlPage,
+  appendQuery,
+  isAllowedGoogleReturnTo,
   APP_GOOGLE_RETURN,
 } = require('../utils/googleOAuth');
 
@@ -300,7 +301,9 @@ const allowedGoogleRedirects = () =>
     ].filter(Boolean)
   );
 
-const upsertGoogleBeneficiary = async (payload) => {
+const upsertGoogleUser = async (payload, requestedRole, options = {}) => {
+  const role = normalizeRole(requestedRole) || 'beneficiary';
+  const allowCreate = role === 'beneficiary' ? true : Boolean(options.allowCreate);
   const email = String(payload.email || '').trim().toLowerCase();
   const googleId = String(payload.sub || '').trim();
   const fullName = String(payload.name || '').trim() || email.split('@')[0] || 'Google user';
@@ -316,9 +319,9 @@ const upsertGoogleBeneficiary = async (payload) => {
     throw error;
   }
 
-  let user = await User.findOne({ $or: [{ googleId }, { email, role: 'beneficiary' }] });
+  let user = await User.findOne({ $or: [{ googleId, role }, { email, role }] });
 
-  if (user && user.role !== 'beneficiary') {
+  if (user && user.role !== role) {
     const error = new Error('Use the provider portal or admin console to sign in with this email.');
     error.status = 400;
     throw error;
@@ -347,13 +350,21 @@ const upsertGoogleBeneficiary = async (payload) => {
     }
     user.lastLoginAt = new Date();
     await user.save();
+  } else if (role === 'admin' || !allowCreate) {
+    const error = new Error(
+      role === 'admin'
+        ? 'No admin account exists for this Google email.'
+        : 'No provider account exists for this email. Request access first.'
+    );
+    error.status = 403;
+    throw error;
   } else {
     user = await User.create({
       fullName,
       email,
       phoneNumber: '',
       googleId,
-      role: 'beneficiary',
+      role,
       status: 'active',
       emailVerified: true,
       lastLoginAt: new Date(),
@@ -403,6 +414,8 @@ const loginWithGoogle = async (req, res) => {
     const code = String(req.body.code || '').trim();
     const codeVerifier = String(req.body.codeVerifier || '').trim();
     const redirectUri = String(req.body.redirectUri || '').trim();
+    const role = normalizeRole(req.body.role) || 'beneficiary';
+    const allowCreate = role === 'beneficiary' ? true : req.body.allowCreate === true;
 
     const payload = idToken
       ? await verifyGoogleIdToken(idToken)
@@ -413,7 +426,7 @@ const loginWithGoogle = async (req, res) => {
     if (!payload) {
       return res.status(400).json({ message: 'Google sign-in token is required' });
     }
-    const session = await upsertGoogleBeneficiary(payload);
+    const session = await upsertGoogleUser(payload, role, { allowCreate });
     return res.json(session);
   } catch (error) {
     if (error.status) {
@@ -773,7 +786,7 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-const startGoogleLogin = async (_req, res) => {
+const startGoogleLogin = async (req, res) => {
   try {
     const clientId = String(process.env.GOOGLE_CLIENT_ID || '').trim();
     const redirectUri = googleRedirectUri();
@@ -781,8 +794,16 @@ const startGoogleLogin = async (_req, res) => {
       return res.status(503).json({ message: 'Google sign-in is not configured on the server.' });
     }
 
+    const role = normalizeRole(req.body?.role) || 'beneficiary';
+    const returnTo = String(req.body?.returnTo || '').trim();
+    const allowCreate = role === 'beneficiary' ? true : req.body?.allowCreate === true;
+
+    if (returnTo && !isAllowedGoogleReturnTo(returnTo)) {
+      return res.status(400).json({ message: 'Invalid Google return URL.' });
+    }
+
     const { verifier, challenge } = pkcePair();
-    const ticketId = createTicket(verifier);
+    const ticketId = createTicket(verifier, { role, returnTo, allowCreate });
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: redirectUri,
@@ -809,6 +830,14 @@ const googleOAuthCallback = async (req, res) => {
   const ticketId = String(req.query.state || '').trim();
   const code = String(req.query.code || '').trim();
   const googleError = String(req.query.error || '').trim();
+  const ticket = ticketId ? getTicket(ticketId) : null;
+  const webReturn =
+    ticket?.returnTo && isAllowedGoogleReturnTo(ticket.returnTo) ? ticket.returnTo : '';
+
+  const redirectFor = (status) =>
+    webReturn
+      ? appendQuery(webReturn, { google_ticket: ticketId, status })
+      : `${APP_GOOGLE_RETURN}?status=${status}`;
 
   const fail = (message) => {
     if (ticketId) {
@@ -818,11 +847,9 @@ const googleOAuthCallback = async (req, res) => {
       .status(400)
       .type('html')
       .send(
-        htmlPage(
-          'Google sign-in failed',
-          `${message} Returning to the app…`,
-          { redirectTo: `${APP_GOOGLE_RETURN}?status=failed` }
-        )
+        htmlPage('Google sign-in failed', `${message} Returning…`, {
+          redirectTo: redirectFor('failed'),
+        })
       );
   };
 
@@ -830,22 +857,21 @@ const googleOAuthCallback = async (req, res) => {
     return fail('Google cancelled the sign-in.');
   }
 
-  const ticket = getTicket(ticketId);
   if (!ticket || !code) {
     return fail('This Google sign-in session expired. Try again from the app.');
   }
 
   try {
     const payload = await exchangeGoogleCode(code, ticket.codeVerifier, googleRedirectUri());
-    const session = await upsertGoogleBeneficiary(payload);
+    const session = await upsertGoogleUser(payload, ticket.role, {
+      allowCreate: ticket.allowCreate,
+    });
     completeTicket(ticketId, { status: 'ready', ...session });
-    return res
-      .type('html')
-      .send(
-        htmlPage('Signed in', 'Returning to Bashper Khidmatuna…', {
-          redirectTo: `${APP_GOOGLE_RETURN}?status=ready`,
-        })
-      );
+    return res.type('html').send(
+      htmlPage('Signed in', 'Returning to Bashper Khidmatuna…', {
+        redirectTo: redirectFor('ready'),
+      })
+    );
   } catch (error) {
     console.error('Google callback error:', error.message);
     return fail(error.message || 'Google sign-in failed.');
@@ -853,7 +879,7 @@ const googleOAuthCallback = async (req, res) => {
 };
 
 const getGoogleTicket = async (req, res) => {
-  const ticket = consumeTicket(String(req.params.ticketId || '').trim());
+  const ticket = getTicket(String(req.params.ticketId || '').trim());
   if (!ticket) {
     return res.json({ status: 'expired', message: 'Google sign-in expired. Try again.' });
   }

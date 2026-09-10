@@ -1471,6 +1471,54 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(101, 226, 217, 0.15);
 }
 
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted, #8aa0c0);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: lowercase;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-strong);
+}
+
+.google-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  background: var(--login-input-bg);
+  color: var(--text);
+  font-weight: 600;
+  padding: 0.9rem 1.2rem;
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease;
+}
+
+.google-signin:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.google-signin:not(:disabled):hover {
+  border-color: var(--accent);
+}
+
+.google-signin__icon {
+  width: 18px;
+  height: 18px;
+}
+
 .password-field {
   position: relative;
   display: flex;

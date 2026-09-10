@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema(
         return !this.googleId;
       },
     },
-    googleId: { type: String, unique: true, sparse: true },
+    googleId: { type: String, sparse: true },
     role: { type: String, enum: ROLES, default: 'beneficiary' },
     status: { type: String, enum: ['pending', 'active', 'suspended'], default: 'pending' },
     emailVerified: { type: Boolean, default: false },
@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.index({ email: 1, role: 1 }, { unique: true });
+userSchema.index({ googleId: 1, role: 1 }, { unique: true, sparse: true });
 
 userSchema.pre('save', async function hashPassword(next) {
   if (!this.password || !this.isModified('password')) {
@@ -51,6 +52,14 @@ userSchema.statics.ensureEmailRoleIndex = async function ensureEmailRoleIndex() 
   } catch (error) {
     if (error.code !== 27 && error.codeName !== 'IndexNotFound') {
       console.warn('[users] Could not drop email_1 index:', error.message);
+    }
+  }
+  try {
+    await this.collection.dropIndex('googleId_1');
+    console.log('[users] Same Google account can now be used across mobile, provider, and admin roles');
+  } catch (error) {
+    if (error.code !== 27 && error.codeName !== 'IndexNotFound') {
+      console.warn('[users] Could not drop googleId_1 index:', error.message);
     }
   }
   await this.syncIndexes();

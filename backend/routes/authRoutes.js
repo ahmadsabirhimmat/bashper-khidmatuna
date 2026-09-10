@@ -58,11 +58,22 @@ router.post(
     body('code').optional().isString(),
     body('codeVerifier').optional().isString(),
     body('redirectUri').optional().isString(),
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
+    body('allowCreate').optional().isBoolean(),
   ],
   loginWithGoogle
 );
 
-router.post('/google/start', authLimiter, startGoogleLogin);
+router.post(
+  '/google/start',
+  authLimiter,
+  [
+    body('role').optional().isIn(['admin', 'provider', 'beneficiary']).withMessage('Invalid role'),
+    body('returnTo').optional().isString(),
+    body('allowCreate').optional().isBoolean(),
+  ],
+  startGoogleLogin
+);
 router.get('/google/callback', authLimiter, googleOAuthCallback);
 router.get('/google/ticket/:ticketId', authLimiter, getGoogleTicket);
 
