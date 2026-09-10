@@ -84,6 +84,18 @@ services:
         value: https://bashper-khidmatuna.onrender.com
     routes:
       - type: rewrite
+        source: /privacy
+        destination: /privacy.html
+      - type: rewrite
+        source: /privacy/
+        destination: /privacy.html
+      - type: rewrite
+        source: /terms
+        destination: /terms.html
+      - type: rewrite
+        source: /terms/
+        destination: /terms.html
+      - type: rewrite
         source: /delete-account
         destination: /delete-account.html
       - type: rewrite
